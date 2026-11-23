@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>クリプト・パーティー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+:root{--bg:#F4F8FB;--panel:#FFFFFF;--soft:#EEF5FA;--line:#DCE7F0;--text:#14213D;--muted:#5B6B7F;--accent:#2B9BEA;--accent-2:#7CC6F5;--accent-soft:#E6F3FD;--accent-ink:#0B4F82;--ok:#14A37F;--ok-soft:#E3F6F0;--warn:#D98200;--warn-soft:#FFF3E0;--red:#E5484D;--red-soft:#FDECEC}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif}
+.num{font-family:"Space Grotesk","Noto Sans JP",sans-serif;font-variant-numeric:tabular-nums}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+[hidden]{display:none!important}
+button{font-family:inherit}
+header{position:sticky;top:0;z-index:15;background:rgba(244,248,251,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.hd{display:flex;align-items:center;gap:6px;padding:10px 12px;max-width:560px;margin:0 auto}
+.ib{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:18px;cursor:pointer;display:grid;place-items:center;flex:none;line-height:1}
+.ib:disabled{opacity:.35;cursor:default}
+.logo{font-size:14px;font-weight:900;margin:0 0 0 4px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.logo span{color:var(--accent)}
+.bal{background:var(--accent-soft);color:var(--accent-ink);border-radius:999px;padding:5px 9px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;border:0}
+.bal.up{animation:up .5s}
+.bal.down{animation:dn .5s}
+@keyframes up{30%{background:var(--ok-soft);color:var(--ok)}}
+@keyframes dn{30%{background:var(--warn-soft);color:var(--warn)}}
+main{max-width:560px;margin:0 auto;padding:14px 16px 110px}
+.screen{display:flex;flex-direction:column;gap:14px;animation:in .22s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(6px)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.card h3{font-size:13px;color:var(--muted);margin:0 0 10px;font-weight:700;letter-spacing:.04em}
+.btn{border:0;border-radius:14px;padding:15px 18px;font-size:17px;font-weight:900;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn:active{transform:scale(.98)}
+.btn-main{background:var(--accent);color:#fff}
+.btn-sub{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+.btn-small{padding:9px 12px;font-size:14px;font-weight:700;width:auto}
+h2{margin:4px 0 0;font-size:24px}
+p{margin:0;line-height:1.7}
+.muted{color:var(--muted)}
+.small{font-size:12.5px;color:var(--muted)}
+.center{text-align:center}
+.err{font-size:13px;color:var(--red)}
+.term{border-bottom:1.5px dotted var(--accent);color:inherit;cursor:help;font-weight:inherit}
+.term:hover{background:var(--accent-soft)}
+
+/* home */
+.hero{padding:40px 4px 8px;display:grid;gap:12px}
+.hero h1{font-size:40px;font-weight:900;margin:0;line-height:1.15}
+.hero h1 span{color:var(--accent)}
+.hero .tag{font-size:15px;font-weight:700;color:var(--accent-ink)}
+.ills{display:flex;gap:10px;margin:14px 0 6px}
+.ills i{width:56px;height:56px;border-radius:16px;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:24px}
+
+/* login */
+.lang{display:flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px}
+.lang button{flex:1;border:0;border-radius:9px;padding:9px;font-size:14px;font-weight:700;color:var(--muted);background:transparent;cursor:pointer}
+.lang button.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(20,33,61,.12)}
+.g{width:22px;height:22px;border-radius:50%;background:#fff;border:1px solid #ddd;display:grid;place-items:center;font-size:13px;font-weight:900;color:#4285F4;font-family:Arial,sans-serif}
+.divider{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+input[type=text]{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:13px 14px;font-size:16px;font-family:inherit}
+input[type=text]:focus{outline:2px solid var(--accent);outline-offset:1px}
+
+/* sheets / overlay / drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,33,61,.38);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--panel);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:18px 18px 26px;display:grid;gap:12px;animation:sup .22s ease-out;max-height:82vh;overflow:auto}
+@keyframes sup{from{transform:translateY(40px);opacity:.5}}
+.sheet-hd{display:flex;align-items:center;gap:8px}
+.sheet-hd b{flex:1;font-size:17px}
+.acct{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer;text-align:left;width:100%;color:var(--text);font-size:15px}
+.av{width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700}
+.drawer-scrim{position:fixed;inset:0;background:rgba(20,33,61,.38);z-index:40;display:flex;justify-content:flex-end}
+.drawer{width:min(320px,86vw);height:100%;background:var(--panel);padding:16px;display:flex;flex-direction:column;gap:6px;animation:sl .22s ease-out;overflow:auto}
+@keyframes sl{from{transform:translateX(30px);opacity:.5}}
+.drawer .who{display:flex;align-items:center;gap:10px;padding:8px 4px 14px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.mi{display:flex;align-items:center;gap:12px;padding:13px 10px;border-radius:12px;border:0;background:transparent;cursor:pointer;font-size:15px;color:var(--text);text-align:left;width:100%}
+.mi:hover{background:var(--soft)}
+.mi .ic{width:26px;text-align:center;font-size:18px}
+.mi:disabled{opacity:.4;cursor:default}
+.overlay{position:fixed;inset:0;background:rgba(244,248,251,.94);display:flex;align-items:center;justify-content:center;z-index:25;text-align:center}
+.overlay .o-big{font-size:120px;font-weight:700;color:var(--accent);margin:0}
+
+/* prep */
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.steps li{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:15px}
+.steps li .d{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:12px;margin-top:2px}
+.steps li.done{color:var(--text)}
+.steps li.done .d{background:var(--ok);border-color:var(--ok);color:#fff;font-weight:900}
+.steps li.doing .d{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+.steps code{display:block;font-size:11.5px;color:var(--muted);word-break:break-all;margin-top:2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* select */
+.games{display:grid;gap:12px}
+.game-card{display:flex;align-items:center;gap:14px;padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--panel);cursor:pointer;color:var(--text);text-align:left;width:100%}
+.game-card .ic{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:26px;flex:none;background:var(--accent-soft)}
+.game-card b{font-size:18px;display:block}
+.game-card span{font-size:13px;color:var(--muted)}
+.game-card .go{margin-left:auto;color:var(--muted);font-size:22px}
+.entry{display:inline-block;margin-top:4px;font-size:12px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:1px 8px}
+.rules{margin:0;padding-left:22px;line-height:1.9;font-size:16px}
+
+/* game */
+.ai{background:var(--accent-soft);border-color:#CBE5F8}
+.ai-line{font-size:15.5px;line-height:1.6;min-height:50px}
+.ai-tag{display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;margin-right:8px;vertical-align:1px}
+.stage{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:18px 14px}
+.potbar{display:flex;gap:8px;width:100%}
+.potbar div{flex:1;background:var(--soft);border-radius:12px;padding:8px}
+.potbar b{display:block;font-size:17px}
+.potbar span{font-size:11.5px;color:var(--muted)}
+.timer{font-size:80px;font-weight:700;line-height:1;margin:0}
+.timer.low{color:var(--red)}
+.lastline{font-size:16px;min-height:26px}
+.lastline b{color:var(--accent-ink)}
+.push{width:184px;height:184px;border-radius:50%;border:8px solid #CFE8FA;background:var(--accent);color:#fff;font-size:32px;font-weight:900;cursor:pointer;box-shadow:0 10px 30px rgba(43,155,234,.28);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.push small{display:block;font-size:14px;font-weight:700;opacity:.9}
+.push:active{transform:scale(.95)}
+.push:disabled{background:#A9C4D8;box-shadow:none}
+.push.red{background:var(--red);border-color:#F9CFD0;box-shadow:0 10px 30px rgba(229,72,77,.25)}
+.board{list-style:none;margin:0;padding:0;display:grid;gap:6px;width:100%}
+.board li{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:8px 12px;border-radius:12px;background:var(--soft);font-size:14px;border:1px solid transparent;text-align:left}
+.board li.lead{border-color:var(--accent);background:var(--accent-soft)}
+.board .tagme{color:var(--muted);font-size:12px;margin-left:6px}
+.board .crown{color:var(--accent);font-size:11px;margin-left:6px}
+.board .c{color:var(--muted);font-size:13px}
+.rope{width:100%;height:56px;position:relative;margin:6px 0}
+.rope .line{position:absolute;left:0;right:0;top:26px;height:5px;background:#C8A66B;border-radius:3px}
+.rope .mid{position:absolute;left:50%;top:6px;width:2px;height:44px;background:var(--muted);opacity:.4}
+.rope .flag{position:absolute;top:10px;width:16px;height:36px;margin-left:-8px;background:var(--warn);border-radius:4px;transition:left .15s ease-out}
+.teams{display:flex;justify-content:space-between;width:100%;font-size:14px}
+.teams b{font-size:26px;display:block}
+.teams .a b{color:var(--accent)}
+.teams .b b{color:var(--red)}
+.track{width:100%;display:grid;gap:8px}
+.lane{display:grid;grid-template-columns:68px 1fr;gap:8px;align-items:center;font-size:13px;text-align:left}
+.lane span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lane .bar{height:14px;background:var(--soft);border-radius:7px;overflow:hidden;position:relative}
+.lane .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent-2);border-radius:7px;transition:width .12s}
+.lane.me .bar i{background:var(--accent)}
+.oni{font-size:23px;font-weight:900;min-height:40px}
+.oni.red{color:var(--red)}
+.oni.green{color:var(--ok)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.stat{background:var(--soft);border-radius:12px;padding:10px}
+.stat .v{font-size:21px;font-weight:700;margin:0}
+.stat .k{font-size:11.5px;color:var(--muted);margin:0}
+.tip{font-size:13px;line-height:1.6;color:var(--accent-ink);background:var(--accent-soft);border-radius:10px;padding:8px 10px;margin-bottom:10px}
+.feed{list-style:none;margin:0;padding:0;font-size:12px;display:grid;gap:5px}
+.feed li{display:grid;grid-template-columns:66px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 9px;border-radius:8px;background:var(--soft)}
+.feed li>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed .sig{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ok{color:var(--ok);font-weight:700}
+.pend{color:var(--warn);font-weight:700}
+.ng{color:var(--red);font-weight:700}
+
+/* learn / wallet */
+.result{font-size:24px;font-weight:900;text-align:center;margin-top:2px}
+.reveal{text-align:center;padding:20px 16px}
+.reveal .big{font-size:60px;font-weight:700;color:var(--accent);line-height:1;margin:6px 0}
+.pl{display:grid;gap:8px}
+.pl-total{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:10px;margin-top:2px}
+.pl-total b{font-size:24px}
+.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--soft);border-radius:10px;padding:9px 11px;font-size:13.5px}
+.row .ic{font-size:16px;width:20px;text-align:center}
+.row .sig{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plus{color:var(--ok);font-weight:700}
+.minus{color:var(--warn);font-weight:700}
+.topics{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.topic{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:14px;text-align:left;cursor:pointer;color:var(--text);display:grid;gap:6px;min-height:92px}
+.topic .ic{font-size:22px}
+.topic b{font-size:14.5px;line-height:1.4}
+.topic.on{border-color:var(--accent);background:var(--accent-soft)}
+.detail{display:grid;gap:12px}
+.detail-hd{display:flex;align-items:center;gap:6px}
+.detail-hd h4{margin:0;font-size:18px;flex:1}
+.rows{display:grid;gap:6px}
+.quiz{border:1px dashed #B9D9F2;border-radius:14px;padding:12px;display:grid;gap:10px}
+.quiz .q{font-weight:700;font-size:15px}
+.quiz .btns{display:flex;gap:8px}
+.quiz .hint{background:var(--warn-soft);border-radius:10px;padding:10px;font-size:14px;line-height:1.7}
+.quiz .ans{background:var(--ok-soft);border-radius:10px;padding:10px;font-size:14px;line-height:1.7}
+.list{margin:0;padding-left:20px;line-height:1.9;font-size:14px}
+.connect ol{margin:0;padding-left:20px;line-height:1.8;font-size:14px}
+.warnbox{border:1px solid #F5B5B7;border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.7;background:var(--red-soft)}
+.secret{background:var(--soft);border-radius:10px;padding:10px;font-size:12px;word-break:break-all}
+.balbig{font-size:44px;font-weight:700;margin:2px 0}
+.spark{width:100%;height:90px;display:block}
+.gamebox{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:6px}
+.gamebox .hd2{display:flex;justify-content:space-between;font-weight:700;font-size:14px}
+.gamebox .r{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+a{color:var(--accent-ink)}
+
+/* glossary */
+.search{position:relative}
+.gl{display:grid;gap:8px}
+.gl button{display:grid;gap:2px;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:12px 14px;cursor:pointer;color:var(--text)}
+.gl b{font-size:15px}
+.gl span{font-size:13px;color:var(--muted)}
+.termbody{font-size:15px;line-height:1.8}
+.termshort{background:var(--accent-soft);border-radius:12px;padding:10px 12px;font-weight:700;color:var(--accent-ink)}
+.pager{display:flex;justify-content:space-between;gap:8px}
+
+/* glossary learning */
+.pbar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:width .3s}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:14px;text-align:left;cursor:pointer;color:var(--text);display:grid;gap:8px}
+.cat .ic{font-size:24px}
+.cat b{font-size:15px}
+.cat .small{display:flex;justify-content:space-between}
+.gl button.done b::after{content:" ✓";color:var(--ok)}
+.flash{border:1px solid var(--line);background:var(--panel);border-radius:20px;min-height:220px;display:grid;place-items:center;text-align:center;padding:22px;cursor:pointer}
+.flash .ft{font-size:28px;font-weight:900}
+.flash .fs{font-size:16px;font-weight:700;color:var(--accent-ink);margin-top:10px}
+.flash .fb{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.7}
+.row2{display:flex;gap:8px}
+.linkcard{display:flex;align-items:center;gap:10px;border:1px dashed #A9D3F2;background:var(--accent-soft);color:var(--accent-ink);border-radius:14px;padding:13px 14px;font-size:14.5px;font-weight:700;cursor:pointer;width:100%;text-align:left}
+.linkcard span{flex:1}
+.tchips{display:flex;flex-wrap:wrap;gap:6px}
+.tchips button{font-size:13px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--soft);color:var(--text);cursor:pointer}
+.tchips button.done{border-color:var(--ok);background:var(--ok-soft)}
+.catlabel{display:inline-block;font-size:12px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-radius:999px;padding:2px 9px}
+.learnbtn.on{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+/* phantom guide */
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;border-radius:9px;padding:10px;font-size:14px;font-weight:700;color:var(--muted);background:transparent;cursor:pointer}
+.seg button.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(20,33,61,.12)}
+.mock{width:220px;margin:0 auto;border:8px solid #1d2433;border-radius:30px;background:#13161f;color:#e9ecf3;padding:14px 12px 18px;min-height:260px;display:flex;flex-direction:column;gap:9px}
+.mock .mh{font-size:12px;color:#9aa3b5;text-align:center;margin-bottom:6px}
+.mock .mi2{border:1px solid #2b3244;border-radius:12px;padding:10px;font-size:12.5px;text-align:center;background:#1b2030;position:relative}
+.mock .mi2.hl{border:2px solid #7CC6F5;background:#1e3248;font-weight:700}
+.mock .mi2.hl::after{content:attr(data-tap);position:absolute;right:-8px;top:-12px;background:#2B9BEA;color:#fff;font-size:10.5px;border-radius:999px;padding:1px 7px}
+.stepno{font-size:13px;color:var(--accent-ink);font-weight:700}
+.dots{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent);width:18px;border-radius:4px}
+/* qr */
+.qrbox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;place-items:center;min-height:240px}
+.qrbox img,.qrbox canvas{width:min(260px,70vw)!important;height:auto!important;image-rendering:pixelated}
+/* AI assistant */
+.fab{position:fixed;right:max(16px,calc(50% - 264px));bottom:18px;width:64px;height:58px;border:0;background:transparent;cursor:pointer;z-index:20;padding:0;filter:drop-shadow(0 6px 14px rgba(43,155,234,.4))}
+.fab .hex{width:100%;height:100%;clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%);background:linear-gradient(135deg,#2B9BEA,#5FC4F0);display:grid;place-items:center;color:#fff}
+.fab svg{width:30px;height:30px}
+.fab .x{display:none;font-size:26px;line-height:1}
+.fab.open .net{display:none}
+.fab.open .x{display:block}
+.fab-label{position:fixed;right:max(84px,calc(50% - 196px));bottom:34px;background:var(--text);color:#fff;font-size:12px;border-radius:8px;padding:5px 9px;z-index:20;white-space:nowrap}
+.chat{position:fixed;right:max(12px,calc(50% - 268px));bottom:90px;width:min(360px,calc(100vw - 24px));height:min(480px,66vh);background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(20,33,61,.18);z-index:21;display:flex;flex-direction:column;overflow:hidden;animation:sup .2s ease-out}
+.chat-hd{display:flex;align-items:center;gap:8px;padding:12px 12px 10px;border-bottom:1px solid var(--line)}
+.chat-hd b{flex:1;font-size:15px}
+.chat-hd .ib{width:30px;height:30px;font-size:15px}
+.msgs{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.msg{font-size:13.5px;line-height:1.7;padding:9px 12px;border-radius:14px;max-width:88%}
+.msg.u{align-self:flex-end;background:var(--accent);color:#fff}
+.msg.a{align-self:flex-start;background:var(--soft)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 8px}
+.chips button{font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid var(--accent);color:var(--accent-ink);background:var(--panel);cursor:pointer}
+.chat-in{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--line)}
+.chat-in input{padding:10px 12px;font-size:14px}
+.chat-in button{flex:none;width:auto;padding:0 14px;border-radius:12px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <button class="ib" id="backBtn" aria-label="戻る">‹</button>
+    <button class="ib" id="fwdBtn" aria-label="進む">›</button>
+    <p class="logo">クリプト・<span>パーティー</span></p>
+    <button class="bal num" id="balChip" hidden></button>
+    <button class="ib" id="menuBtn" aria-label="メニュー">☰</button>
+  </div>
+</header>
+
+<main>
+  <section class="screen" id="scrHome">
+    <div class="hero">
+      <div class="tag" data-t="home_tag"></div>
+      <h1>クリプト・<br><span>パーティー</span></h1>
+      <p class="muted" data-t="home_sub"></p>
+      <div class="ills"><i>👆</i><i>⚡</i><i>🔗</i></div>
+    </div>
+    <button class="btn btn-main" id="homeStart" data-t="start"></button>
+    <button class="linkcard" id="homeGloss"><span data-t="home_gloss"></span>›</button>
+    <p class="small center" data-t="browser_note"></p>
+  </section>
+
+  <section class="screen" id="scrLogin" hidden>
+    <h2 data-t="login_title"></h2>
+    <p class="muted" data-t="login_sub"></p>
+    <div><div class="small" style="margin-bottom:6px" data-t="lang"></div>
+      <div class="lang"><button data-lang="ja">日本語</button><button data-lang="en">English</button></div></div>
+    <div style="height:6px"></div>
+    <button class="btn btn-sub" id="googleBtn"><span class="g">G</span><span data-t="google"></span></button>
+    <div class="divider" data-t="or"></div>
+    <input type="text" id="nickIn" maxlength="10" autocomplete="off">
+    <div class="err" id="nickErr" hidden data-t="nick_err"></div>
+    <button class="btn btn-main" id="nickBtn" data-t="nick_join"></button>
+  </section>
+
+  <section class="screen" id="scrPrep" hidden>
+    <h2 id="prepTitle"></h2>
+    <div class="card"><ul class="steps" id="prepSteps"></ul></div>
+  </section>
+
+  <section class="screen" id="scrSelect" hidden>
+    <h2 data-t="select_title"></h2>
+    <p class="muted" data-t="select_sub"></p>
+    <div class="games">
+      <button class="game-card" data-game="last"><span class="ic">⏱️</span><span><b data-t="g_last"></b><span data-t="g_last_d"></span><br><span class="entry" data-t="entry"></span></span><span class="go">›</span></button>
+      <button class="game-card" data-game="tug"><span class="ic">🪢</span><span><b data-t="g_tug"></b><span data-t="g_tug_d"></span><br><span class="entry" data-t="entry"></span></span><span class="go">›</span></button>
+      <button class="game-card" data-game="daruma"><span class="ic">🎎</span><span><b data-t="g_daruma"></b><span data-t="g_daruma_d"></span><br><span class="entry" data-t="entry"></span></span><span class="go">›</span></button>
+    </div>
+    <button class="linkcard" id="selGloss">📖<span data-t="sel_gloss"></span>›</button>
+  </section>
+
+  <section class="screen" id="scrRules" hidden>
+    <h2 id="rulesTitle"></h2>
+    <div class="card"><ol class="rules" id="rulesList"></ol></div>
+    <div class="card"><h3 data-t="money_rule_h"></h3><p style="font-size:14.5px" id="moneyRule"></p></div>
+    <div class="card"><h3 data-t="rules_terms"></h3><div class="tchips" id="rulesTerms"></div></div>
+    <div class="card ai"><p class="ai-line"><span class="ai-tag">AI</span><span id="rulesAi"></span></p></div>
+    <button class="btn btn-main" id="rulesStart" data-t="go_start"></button>
+  </section>
+
+  <section class="screen" id="scrGame" hidden>
+    <div class="card ai"><p class="ai-line" id="aiLine"><span class="ai-tag">AI</span></p></div>
+    <div class="card stage" id="stage"></div>
+    <div class="card">
+      <h3 data-t="tx_title"></h3>
+      <div class="stats">
+        <div class="stat"><p class="v num" id="sMine">0</p><p class="k" data-t="s_mine"></p></div>
+        <div class="stat"><p class="v num" id="sTotal">0</p><p class="k" data-t="s_total"></p></div>
+        <div class="stat"><p class="v num" id="sMed">–</p><p class="k" data-t="s_med"></p></div>
+      </div>
+      <div class="tip" id="tip"></div>
+      <ul class="feed" id="feed"></ul>
+    </div>
+  </section>
+
+  <section class="screen" id="scrLearn" hidden>
+    <div class="result" id="resultLine"></div>
+    <div class="card">
+      <h3 data-t="pl_title"></h3>
+      <div class="pl" id="plRows"></div>
+      <button class="btn btn-sub btn-small" style="width:100%;margin-top:10px" id="toWallet" data-t="see_wallet"></button>
+    </div>
+    <div class="card reveal">
+      <p class="muted" data-t="big_pre"></p>
+      <p class="big num" id="bigN">0</p>
+      <p style="font-weight:700" data-t="big_post"></p>
+      <p class="small" id="bigSub" style="margin-top:8px"></p>
+    </div>
+    <p style="font-weight:700" data-t="pick"></p>
+    <div class="topics" id="topics"></div>
+    <div class="card detail" id="detail" hidden></div>
+    <div class="card"><h3 data-t="today_terms"></h3><div class="tchips" id="learnTerms"></div>
+      <button class="btn btn-sub btn-small" style="width:100%;margin-top:10px" id="learnGloss" data-t="review_gloss"></button></div>
+    <button class="linkcard" id="learnPhantom">👛<span data-t="open_phantom_guide"></span>›</button>
+    <button class="btn btn-main" id="againBtn" data-t="again"></button>
+  </section>
+
+  <section class="screen" id="scrWallet" hidden>
+    <h2 data-t="w_title"></h2>
+    <div class="card">
+      <p class="small" data-t="w_now"></p>
+      <p class="balbig num" id="wBal"></p>
+      <p id="wDiff" style="font-size:14px"></p>
+      <svg class="spark" id="spark" viewBox="0 0 300 90" preserveAspectRatio="none"></svg>
+      <p class="small" data-t="w_spark"></p>
+    </div>
+    <div class="card"><h3 data-t="w_by_game"></h3><div style="display:grid;gap:10px" id="wGames"></div></div>
+    <div class="card"><h3 data-t="w_ledger"></h3><div class="rows" id="wLedger"></div></div>
+    <div class="card"><h3 data-t="w_addr"></h3><div class="secret mono" id="wAddr"></div></div>
+    <button class="linkcard" id="wGloss">💰<span data-t="w_gloss"></span>›</button>
+    <div class="card connect">
+      <h3 data-t="c_title"></h3>
+      <p class="small" style="margin-bottom:10px" data-t="c_sub"></p>
+      <button class="btn btn-main btn-small" style="width:100%" id="toPhantom" data-t="open_phantom_guide"></button>
+      <div class="warnbox" style="margin-top:10px" data-t="c_warn"></div>
+      <div style="display:grid;gap:8px;margin-top:10px">
+        <button class="btn btn-sub btn-small" id="showSecret" data-t="c_show"></button>
+        <div id="secretWrap" hidden>
+          <div class="secret mono" id="secretText"></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px"><button class="btn btn-sub btn-small" id="copySecret" data-t="c_copy"></button><span class="small" id="copyMsg"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="scrGloss" hidden>
+    <h2 data-t="gl_title"></h2>
+    <p class="muted" data-t="gl_sub"></p>
+    <div class="card"><div class="small" id="glProg" style="margin-bottom:8px"></div><div class="pbar"><i id="glBar"></i></div></div>
+    <input type="text" id="glSearch">
+    <div class="catgrid" id="catGrid"></div>
+    <div class="gl" id="glList"></div>
+  </section>
+
+  <section class="screen" id="scrCat" hidden>
+    <h2 id="catTitle"></h2>
+    <div class="card"><div class="small" id="catProg" style="margin-bottom:8px"></div><div class="pbar"><i id="catBar"></i></div></div>
+    <div id="catListWrap" style="display:grid;gap:12px">
+      <button class="btn btn-main" id="flashStart" data-t="flash_start"></button>
+      <div class="gl" id="catList"></div>
+    </div>
+    <div id="flashWrap" hidden style="display:grid;gap:12px">
+      <div class="detail-hd"><span class="small" id="flashCount" style="flex:1"></span><button class="ib" id="flashClose" aria-label="×">×</button></div>
+      <div class="flash" id="flashCard"></div>
+      <div class="row2"><button class="btn btn-sub" id="flashYet" data-t="flash_yet"></button><button class="btn btn-main" id="flashGot" data-t="flash_got"></button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="scrPhantom" hidden>
+    <h2 data-t="pg_title"></h2>
+    <p class="muted" data-t="pg_sub"></p>
+    <div class="seg"><button data-pg="new" data-t="pg_new"></button><button data-pg="have" data-t="pg_have"></button></div>
+    <div class="card" style="display:grid;gap:14px">
+      <div class="stepno" id="pgNo"></div>
+      <h3 style="margin:0;font-size:19px;color:var(--text);letter-spacing:0" id="pgT"></h3>
+      <div class="mock" id="pgMock"></div>
+      <p id="pgB" style="font-size:15px"></p>
+      <div class="dots" id="pgDots"></div>
+      <div class="row2"><button class="btn btn-sub" id="pgPrev"></button><button class="btn btn-main" id="pgNext"></button></div>
+    </div>
+    <p class="small" data-t="pg_note"></p>
+  </section>
+
+  <section class="screen" id="scrQR" hidden>
+    <h2 data-t="qr_title"></h2>
+    <p class="muted" data-t="qr_sub"></p>
+    <div class="qrbox" id="qrBox"></div>
+    <p class="center mono small" id="qrUrlText" style="word-break:break-all"></p>
+    <div class="card" style="display:grid;gap:8px">
+      <label class="small" for="qrUrl" data-t="qr_url_l"></label>
+      <input type="text" id="qrUrl" placeholder="https://〇〇.github.io/crypto-party/">
+      <div class="err" id="qrErr" hidden></div>
+      <button class="btn btn-main btn-small" style="width:100%" id="qrMake" data-t="qr_make"></button>
+    </div>
+    <div class="card"><h3 data-t="qr_how_h"></h3><ol class="list" id="qrHow"></ol></div>
+  </section>
+</main>
+
+<!-- AI アシスタント -->
+<span class="fab-label" id="fabLabel" hidden data-t="fab_label"></span>
+<button class="fab" id="fab" hidden aria-label="AI"><span class="hex"><svg class="net" viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="16" cy="7" r="3"/><circle cx="7" cy="23" r="3"/><circle cx="25" cy="23" r="3"/><path d="M14.5 9.6 8.6 20.4M17.5 9.6l5.9 10.8M10 23h12"/><text x="16" y="19.5" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff" stroke="none" font-family="Arial,sans-serif">AI</text></svg><span class="x">×</span></span></button>
+<div class="chat" id="chat" hidden>
+  <div class="chat-hd"><span class="ai-tag">AI</span><b data-t="chat_title"></b><button class="ib" id="chatMin" aria-label="−">−</button><button class="ib" id="chatClose" aria-label="×">×</button></div>
+  <div class="msgs" id="msgs"></div>
+  <div class="chips" id="chips"></div>
+  <form class="chat-in" id="chatForm"><input type="text" id="chatIn" autocomplete="off"><button type="submit" data-t="send"></button></form>
+</div>
+
+<!-- 用語シート -->
+<div class="scrim" id="termScrim" hidden>
+  <div class="sheet">
+    <div><span class="catlabel" id="termCat"></span></div>
+    <div class="sheet-hd"><b id="termTitle"></b><button class="ib" id="termClose" aria-label="×">×</button></div>
+    <div class="termshort" id="termShort"></div>
+    <div class="termbody" id="termBody"></div>
+    <button class="btn btn-sub btn-small learnbtn" style="width:100%" id="termLearn"></button>
+    <div class="pager"><button class="btn btn-sub btn-small" id="termPrev">‹ <span data-t="prev"></span></button><button class="btn btn-sub btn-small" id="termAsk" data-t="ask_ai"></button><button class="btn btn-sub btn-small" id="termNext"><span data-t="next"></span> ›</button></div>
+  </div>
+</div>
+
+<!-- Google アカウント選択 -->
+<div class="scrim" id="acctScrim" hidden>
+  <div class="sheet">
+    <div class="sheet-hd"><span class="g">G</span><b data-t="choose_acct"></b><button class="ib" id="acctClose" aria-label="×">×</button></div>
+    <button class="acct" id="acctBtn"><span class="av">せ</span><span><b id="acctName">せいたろう</b><br><span class="small">Google</span></span></button>
+  </div>
+</div>
+
+<!-- メニュー -->
+<div class="drawer-scrim" id="drawerScrim" hidden>
+  <nav class="drawer">
+    <div style="display:flex;justify-content:flex-end"><button class="ib" id="drawerClose" aria-label="×">×</button></div>
+    <div class="who" id="drawerWho"></div>
+    <button class="mi" data-m="select"><span class="ic">🎮</span><span data-t="m_games"></span></button>
+    <button class="mi" data-m="learn"><span class="ic">📝</span><span data-t="m_learn"></span></button>
+    <button class="mi" data-m="wallet"><span class="ic">👛</span><span data-t="m_wallet"></span></button>
+    <button class="mi" data-m="gloss"><span class="ic">📖</span><span data-t="m_gloss"></span></button>
+    <button class="mi" data-m="phantom"><span class="ic">🔗</span><span data-t="m_phantom"></span></button>
+    <button class="mi" data-m="ai"><span class="ic">💬</span><span data-t="m_ai"></span></button>
+    <button class="mi" data-m="qr"><span class="ic">▦</span><span data-t="m_qr"></span></button>
+    <div style="padding:10px 4px 4px"><div class="small" style="margin-bottom:6px" data-t="lang"></div><div class="lang"><button data-lang="ja">日本語</button><button data-lang="en">English</button></div></div>
+    <div style="flex:1"></div>
+    <button class="mi" data-m="reset"><span class="ic">↩︎</span><span data-t="m_reset"></span></button>
+  </nav>
+</div>
+
+<div class="overlay" id="overlay" hidden><div><p class="o-big num" id="oBig">3</p><p class="muted" id="oSmall"></p></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const median = a => { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
+const sol = (n, d = 4) => (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(d);
+const solp = (n, d = 4) => Math.abs(n).toFixed(d);
+
+// ================= 用語 =================
+const CATS = [
+ { id:"basic", icon:"🔰", ja:"基本のことば", en:"The basics", keys:["chain","web3","crypto","tx","block","node","decentral","onchain"] },
+ { id:"safe", icon:"🔐", ja:"ウォレットと安全", en:"Wallets and safety", keys:["wallet","address","secret","pubkey","seed","sign","selfcust","burner","phishing","hardware"] },
+ { id:"money", icon:"💰", ja:"お金とトークン", en:"Money and tokens", keys:["sol","lamport","fee","priority","token","stable","usdc","nft","airdrop","faucet","exchange","pot"] },
+ { id:"how", icon:"⚙️", ja:"しくみ", en:"How it works", keys:["hash","final","slot","consensus","validator","rpc","explorer","rent","oracle","vrf"] },
+ { id:"solana", icon:"◎", ja:"Solana", en:"Solana", keys:["solana","alpenglow","program","devnet","mainnet","anchor","solpay","blinks"] },
+ { id:"apps", icon:"📱", ja:"アプリと使い道", en:"Apps and uses", keys:["phantom","dapp","connect","defi","dex","dao","gamefi","kyc"] }
+];
+const TERMS = {
+ ja: {
+  chain:["ブロックチェーン","世界中のコンピューターが同じ記録を持ち合う仕組み","1つの会社が記録を持つのではなく、たくさんのコンピューターが同じ記録を持ち合い、確かめ合います。だから、誰か1人がこっそり書き換えることができません。"],
+  web3:["Web3","ブロックチェーンを使った、次のインターネット","これまでのサービスは会社がデータやお金を管理していました。Web3では記録をブロックチェーンに置き、自分のウォレットで自分のデータやお金を持てるようにします。"],
+  crypto:["暗号資産","ブロックチェーン上で動くデジタルのお金","仮想通貨とも呼ばれます。SOLやビットコインなどがあります。値段が大きく動くことがあるので注意が必要です。"],
+  tx:["トランザクション","ブロックチェーンに送る「お願い」1回分","「ボタンを押した」「お金を送った」など、何かをしたことを記録してもらうための1回分のメッセージです。秘密鍵で署名して送ります。今日のゲームでは、1回押すたびに1つ送っていました。"],
+  block:["ブロック","トランザクションをまとめた箱","一定時間ごとにトランザクションがまとめられ、前のブロックとつながって鎖（チェーン）になります。"],
+  node:["ノード","ブロックチェーンに参加しているコンピューター","世界中のノードが同じ記録を持ち、新しい記録が正しいかを確かめ合います。"],
+  decentral:["分散化","1つの会社や人に頼らない仕組み","記録を多くのコンピューターで持ち合うので、どこか1か所が止まったり不正をしたりしても、全体は動き続けます。"],
+  onchain:["オンチェーン","ブロックチェーンの上に記録されていること","オンチェーンの記録は誰でも確認でき、消せません。ブロックチェーンの外にあるデータは「オフチェーン」と呼びます。"],
+  wallet:["ウォレット","お金や記録を動かすための「カギ入れ」","お財布のような名前ですが、お金そのものはブロックチェーンの上にあります。ウォレットが持っているのは、それを動かす秘密鍵と、受け取り用のアドレスです。"],
+  address:["アドレス","ウォレットの「口座番号」","英数字の長い文字列で、人に教えても大丈夫です。SOLを受け取るときや、Explorerで記録を見るときに使います。"],
+  secret:["秘密鍵","ウォレットを動かせる、たった1つのカギ","これを知っている人は、そのウォレットのお金を全部動かせます。本物のお金が入ったウォレットの秘密鍵は、絶対に人に見せたり送ったりしないでください。"],
+  pubkey:["公開鍵","秘密鍵とペアになった、公開してよいカギ","Solanaでは公開鍵がそのままアドレスになります。署名が本物かどうかを、公開鍵で誰でも確かめられます。"],
+  seed:["シードフレーズ","ウォレットを丸ごと復元できる12〜24個の英単語","リカバリーフレーズとも呼ばれます。秘密鍵と同じく、絶対に人に教えないでください。紙に書いて保管するのが基本です。"],
+  sign:["署名","秘密鍵で付ける「サイン」","トランザクションに付ける、本人が送ったことの証明です。秘密鍵を持っている人にしか作れず、誰でも正しいサインか確かめられます。"],
+  selfcust:["セルフカストディ","自分のお金を自分で管理すること","取引所に預けるのではなく、自分のウォレットで持つことです。自由な反面、カギをなくすと誰も助けてくれません。"],
+  burner:["使い捨てウォレット","その場だけ使う、お試し用のウォレット","今日のゲームで自動で作られたのがこれです。大事なお金は入れず、練習や1回きりの用途に使います。"],
+  phishing:["フィッシング詐欺","偽サイトや偽メッセージでカギを盗む詐欺","「サポートです。シードフレーズを教えてください」は100%詐欺です。知らないリンクでのウォレット接続や署名には注意しましょう。"],
+  hardware:["ハードウェアウォレット","秘密鍵をネットから切り離して守る専用の機械","大きな金額を持つ人が使います。署名するときだけ機械で承認するので、盗まれにくくなります。"],
+  sol:["SOL","Solanaで使うお金の単位","手数料の支払いや、送金・受け取りに使います。今日のゲームで動いたのも、このSOLです。"],
+  lamport:["ランポート","SOLのいちばん小さい単位","1 SOL＝10億ランポート。手数料などの細かい金額は、内部ではランポートで計算しています。"],
+  fee:["手数料","トランザクション1回ごとに払う小さな料金","記録してくれるコンピューターへのお礼のようなものです。Solanaでは1回約0.000005 SOLと、とても安いです。"],
+  priority:["優先手数料","早く処理してほしいときに上乗せする手数料","混雑しているときに少し多く払うと、先に処理されやすくなります。"],
+  token:["トークン","ブロックチェーン上で発行されたデジタル資産","お金のように使うもの、ポイント、会員権など、いろいろな種類があります。"],
+  stable:["ステーブルコイン","ドルなどと同じ価値になるよう作られたトークン","値段がほとんど動かないので、送金や支払いに向いています。USDCが代表例です。"],
+  usdc:["USDC","1枚＝約1ドルのステーブルコイン","Solana上でも広く使われ、Solana Payでの支払いにもよく使われます。"],
+  nft:["NFT","ブロックチェーン上の「持ち物の証明」","チケット、会員証、デジタル作品などを、自分が持っていると証明できる仕組みです。"],
+  airdrop:["エアドロップ","トークンが無料で配られること","テストネットで練習用のSOLを受け取るときにも使う言葉です。本物の「無料配布」をうたう詐欺も多いので注意。"],
+  faucet:["フォーセット","練習用のSOLを無料でもらえる「蛇口」","テストネットで開発や練習をするときに使います。ここのSOLに価値はありません。"],
+  exchange:["取引所","暗号資産を円と交換できるサービス","日本では金融庁に登録された取引所を使います。口座を作るには本人確認が必要です。"],
+  pot:["賞金プール","参加費を集めた入れ物","全員の参加費がプログラムの管理する場所に集まり、勝った人に自動で支払われます。運営も途中で抜き取れません。"],
+  hash:["ハッシュ","データから作る「指紋」","元のデータを隠したまま、あとで「同じデータだったか」を確かめられます。だるまさんが転んだでは、鬼の合図の順番を先にハッシュで公開していました。"],
+  final:["確定","記録がもう取り消せなくなること","トランザクションが確定すると、誰にも取り消せません。今のSolanaでは1秒もかからずに確定します。"],
+  slot:["スロット","Solanaの時間の区切り","約0.4秒ごとにスロットが進み、その中でトランザクションが処理されます。ゲームの締切もスロットで判定する設計です。"],
+  consensus:["コンセンサス","みんなで「この記録が正しい」と合意する方法","どの順番で記録するかを、たくさんのコンピューターが合意して決めます。"],
+  validator:["バリデーター","トランザクションを確かめて記録するコンピューター","世界中のバリデーターが記録を確かめ、そのお礼として手数料などを受け取ります。"],
+  rpc:["RPC","アプリがブロックチェーンと話すための窓口","アプリはRPCを通して、トランザクションを送ったり残高を読んだりします。"],
+  explorer:["Explorer","ブロックチェーンの記録を誰でも見られるサイト","アドレスやトランザクションの番号を入れると、誰がいつ何をしたかを確認できます。"],
+  rent:["保管料","ブロックチェーンにデータを置くための預け金","参加したときに作られたあなたのデータのために預けたお金です。データを消すと戻ってきます。"],
+  oracle:["オラクル","ブロックチェーンの外の情報を届ける仕組み","天気や価格など、チェーンの外の情報をプログラムが使えるようにします。"],
+  vrf:["検証できる乱数","あとから「いじっていない」と確かめられる乱数","VRFとも呼ばれます。くじや抽選、ゲームの運の要素を公平にするのに使います。"],
+  solana:["Solana","速くて、手数料がとても安いブロックチェーン","世界で広く使われているブロックチェーンの1つです。たくさんの処理を、短い時間で安く行えるのが特徴です。"],
+  alpenglow:["Alpenglow","2026年10月に入ったSolanaの大型アップデート","記録が確定するまでの時間を、約12.8秒から約0.15秒を目標に大きく縮めました。1押しごとに送るゲームが成り立つのは、このおかげです。"],
+  program:["プログラム","ブロックチェーンの上でルールを自動で実行するしくみ","「スマートコントラクト」とも呼ばれます。今日のゲームの勝ち負けや賞金の支払いは、運営ではなくプログラムが決める設計です。"],
+  devnet:["テストネット（devnet）","練習用のブロックチェーン","本物と同じ仕組みで動きますが、ここのSOLには価値がありません。失敗しても安心して試せます。"],
+  mainnet:["メインネット","本物のお金が動く本番のブロックチェーン","テストネットと仕組みは同じですが、SOLに本当の価値があります。"],
+  anchor:["Anchor","Solanaのプログラムを作るための道具","開発者がSolanaのプログラムを書きやすくするフレームワークです。"],
+  solpay:["Solana Pay","QRを読んでSolanaで支払う仕組み","お店のQRを読むと、金額入りの支払いがウォレットに出てきます。"],
+  blinks:["Blinks","SNSの投稿などから直接トランザクションを送れるリンク","アプリを開かなくても、リンクから支払いや投票ができます。"],
+  phantom:["Phantom","Solanaで人気のウォレットアプリ","スマホやブラウザで使えます。今日のウォレットを取り込めば、そのまま使い続けられます。"],
+  dapp:["dApp","ブロックチェーンの上で動くアプリ","ウォレットをつなぐと使えるアプリのことです。今日のゲームもdAppの一種です。"],
+  connect:["ウォレット接続","アプリにウォレットを使わせること","接続すると、アプリがあなたのアドレスを知り、署名をお願いできるようになります。知らないサイトにはつながないこと。"],
+  defi:["DeFi","銀行を通さない、ブロックチェーン上の金融サービス","交換、貸し借り、預け入れなどをプログラムが自動で行います。仕組みを理解してから使いましょう。"],
+  dex:["DEX","運営者なしでトークンを交換できる場所","取引所と違い、自分のウォレットから直接交換します。"],
+  dao:["DAO","ブロックチェーンで運営されるグループ","メンバーがトークンなどで投票し、ルールやお金の使い道を決めます。"],
+  gamefi:["ブロックチェーンゲーム","結果やアイテムがチェーンに残るゲーム","今日のゲームもその一つです。運営がいなくなっても、記録や持ち物は残ります。"],
+  kyc:["本人確認（KYC）","サービスを使う前の本人確認","取引所などで必要です。身分証の提出などをします。"]
+ },
+ en: {
+  chain:["Blockchain","Many computers keeping the same record","Instead of one company holding the record, many computers share and check it together. That's why no single person can quietly change it."],
+  web3:["Web3","The next internet, built on blockchains","Until now, companies held your data and money. In Web3, records live on a blockchain and you hold your own data and money in your wallet."],
+  crypto:["Crypto asset","Digital money that runs on a blockchain","Also called cryptocurrency, like SOL or Bitcoin. Prices can swing a lot, so be careful."],
+  tx:["Transaction","One \"request\" sent to the blockchain","A single message asking the blockchain to record something you did, like a tap or a payment. You sign it with your private key. In today's game, every tap sent one."],
+  block:["Block","A box of transactions","Transactions are bundled at regular intervals and linked to the previous block, forming a chain."],
+  node:["Node","A computer taking part in the blockchain","Nodes around the world hold the same record and check that new records are valid."],
+  decentral:["Decentralization","Not relying on one company or person","Because many computers share the record, the whole keeps running even if one stops or cheats."],
+  onchain:["On-chain","Recorded on the blockchain","On-chain records can be checked by anyone and can't be deleted. Data outside the chain is called off-chain."],
+  wallet:["Wallet","A keyring for moving your money and records","Your money actually lives on the blockchain. The wallet holds the private key that moves it and the address that receives it."],
+  address:["Address","Your wallet's account number","A long string of letters and numbers. It's safe to share. Use it to receive SOL and look up records."],
+  secret:["Private key","The one key that controls a wallet","Anyone who knows it can move everything in the wallet. Never show or send the private key of a wallet that holds real money."],
+  pubkey:["Public key","The shareable half of your key pair","On Solana, your public key is your address. Anyone can use it to check your signatures."],
+  seed:["Seed phrase","12–24 words that restore a whole wallet","Also called a recovery phrase. Like a private key, never share it. Write it on paper and keep it safe."],
+  sign:["Signature","A seal made with your private key","Proof attached to a transaction that you really sent it. Only the key holder can make it, and anyone can check it."],
+  selfcust:["Self-custody","Holding your own money yourself","Keeping funds in your own wallet instead of an exchange. You're free, but nobody can help if you lose your key."],
+  burner:["Burner wallet","A throwaway wallet for one-off use","The wallet made for you in today's game. Don't keep important money in it."],
+  phishing:["Phishing","Scams that steal keys with fake sites or messages","\"Support here, send your seed phrase\" is always a scam. Be careful connecting or signing on unknown links."],
+  hardware:["Hardware wallet","A device that keeps your key offline","Used for large amounts. You approve each signature on the device, so it's hard to steal."],
+  sol:["SOL","The currency used on Solana","Used to pay fees and to send or receive money. The money in today's game was SOL."],
+  lamport:["Lamport","The smallest unit of SOL","1 SOL = 1 billion lamports. Small amounts like fees are counted in lamports internally."],
+  fee:["Fee","A tiny charge for each transaction","Like a thank-you to the computers that record it. On Solana it's about 0.000005 SOL each."],
+  priority:["Priority fee","Extra fee to get processed sooner","When the network is busy, paying a little more helps your transaction go first."],
+  token:["Token","A digital asset issued on a blockchain","Money-like tokens, points, memberships, and more."],
+  stable:["Stablecoin","A token pegged to something like the dollar","Its price barely moves, so it's good for payments. USDC is the best-known example."],
+  usdc:["USDC","A stablecoin worth about $1","Widely used on Solana, including for Solana Pay."],
+  nft:["NFT","Proof of owning something on the blockchain","Used for tickets, memberships, and digital art you can prove you own."],
+  airdrop:["Airdrop","Tokens given out for free","Also used for getting practice SOL on a testnet. Many scams pretend to be airdrops."],
+  faucet:["Faucet","A tap that gives free practice SOL","Used on testnets for building and practice. That SOL has no value."],
+  exchange:["Exchange","A service that swaps crypto for cash","In Japan, use an exchange registered with the FSA. Opening an account requires ID verification."],
+  pot:["Prize pool","Where entry fees are collected","Everyone's entry fee goes to a place the program controls and is paid to the winner automatically. Nobody can take it midway."],
+  hash:["Hash","A fingerprint made from data","Lets you check later that data hasn't changed, without revealing it first. In Red Light, Green Light, the AI's calls were published as a hash before the start."],
+  final:["Finality","When a record can no longer be undone","Once final, nobody can reverse a transaction. Solana gets there in under a second."],
+  slot:["Slot","Solana's unit of time","A slot passes about every 0.4 seconds, and transactions are processed inside it. Game deadlines are designed to be judged by slot."],
+  consensus:["Consensus","How everyone agrees a record is correct","Many computers agree on the order in which records are written."],
+  validator:["Validator","A computer that checks and records transactions","Validators worldwide check records and earn fees in return."],
+  rpc:["RPC","An app's window to the blockchain","Apps send transactions and read balances through an RPC."],
+  explorer:["Explorer","A site where anyone can view blockchain records","Enter an address or transaction ID to see who did what and when."],
+  rent:["Rent","A deposit for keeping data on the blockchain","Paid when you joined, to store your player data. You get it back when the data is deleted."],
+  oracle:["Oracle","Brings outside information onto the chain","Lets programs use data like weather or prices."],
+  vrf:["Verifiable randomness","Random numbers anyone can check weren't rigged","Also called VRF. Keeps lotteries and game luck fair."],
+  solana:["Solana","A fast blockchain with very low fees","One of the most widely used blockchains, known for handling lots of activity quickly and cheaply."],
+  alpenglow:["Alpenglow","Solana's big upgrade in October 2026","It cut the time to finality from about 12.8 seconds to a target of about 0.15 seconds. That's what makes a tap-by-tap game possible."],
+  program:["Program","Rules that run automatically on the blockchain","Also called a smart contract. Winners and prizes are designed to be decided by the program, not by us."],
+  devnet:["Testnet (devnet)","A practice blockchain","Works just like the real one, but its SOL has no value, so it's safe to experiment."],
+  mainnet:["Mainnet","The real blockchain where real money moves","Same technology as the testnet, but SOL has real value."],
+  anchor:["Anchor","A toolkit for building Solana programs","A framework that makes Solana programs easier to write."],
+  solpay:["Solana Pay","Pay with Solana by scanning a QR","Scan a shop's QR and a payment request appears in your wallet."],
+  blinks:["Blinks","Links that send transactions from posts","Pay or vote straight from a link without opening an app."],
+  phantom:["Phantom","A popular Solana wallet app","Works on phones and in browsers. Import today's wallet and keep using it."],
+  dapp:["dApp","An app that runs on a blockchain","An app you use by connecting a wallet. Today's game is one."],
+  connect:["Wallet connection","Letting an app use your wallet","The app learns your address and can ask you to sign. Don't connect to sites you don't know."],
+  defi:["DeFi","Financial services without banks","Swapping, lending, and saving run automatically through programs. Learn how it works first."],
+  dex:["DEX","A place to swap tokens without an operator","Unlike an exchange, you swap straight from your own wallet."],
+  dao:["DAO","A group run on a blockchain","Members vote, often with tokens, to set rules and decide how money is used."],
+  gamefi:["Blockchain game","A game whose results and items live on-chain","Today's game is one. Records and items remain even if the operator goes away."],
+  kyc:["ID verification (KYC)","Proving who you are before using a service","Needed for exchanges and similar services."]
+ }
+};
+const TERM_KEYS = CATS.flatMap(c => c.keys);
+const catOf = k => CATS.find(c => c.keys.includes(k));
+
+
+// ================= 文言 =================
+const D = {
+ja: {
+  home_tag:"Web3デビューは、友達とのゲームから", home_sub:"友達と遊ぶだけ。準備はいりません。", start:"はじめる", browser_note:"SafariかChromeで開いてね",
+  login_title:"ログイン", login_sub:"アカウントでかんたんに参加できます", lang:"言語", google:"Googleで続ける", or:"または", nick_ph:"ニックネーム", nick_join:"ニックネームで参加", nick_err:"ニックネームを入れてね",
+  choose_acct:"アカウントを選択",
+  prep_title:"ようこそ、{name}さん", prep1g:"ログインしました", prep1n:"ニックネームを登録しました", prep2:"あなたの[[wallet|ウォレット]]を作成", prep3:"パーティーから 0.05 [[sol|SOL]] を受け取る", prep4:"参加登録（[[rent|保管料]] 0.0015 SOL）",
+  select_title:"ゲームを選ぶ", select_sub:"どのゲームも、1回押すごとに[[solana|Solana]]の[[tx|トランザクション]]になります。", entry:"参加費 0.01 SOL",
+  g_last:"ラストワン", g_last_d:"最後に押していた人が勝ち", g_tug:"綱引き", g_tug_d:"チームで連打して綱を引け", g_daruma:"だるまさんが転んだ", g_daruma_d:"鬼が振り向いたら止まれ",
+  r_last:["タイマーが0になった瞬間、最後に押していた人の勝ち","押すとタイマーが10秒に戻る","押せるのは1人10回まで"],
+  r_tug:["自分のチームのボタンを連打する","旗が相手側に寄るほど有利","20秒後、旗が寄っていた方の勝ち"],
+  r_daruma:["「だるまさんが…」の間に連打して進む","「転んだ！」の間に押すとスタートに戻る","最初にゴールした人の勝ち"],
+  money_rule_h:"お金の動き",
+  money_last:"全員が参加費 0.01 SOL を[[pot|賞金プール]]に入れます。勝った人がプール（0.04 SOL）を総取り。1回押すごとに[[fee|手数料]]が少しかかります。",
+  money_tug:"全員が参加費 0.01 SOL を[[pot|賞金プール]]に入れます。勝ったチームの2人でプール（0.04 SOL）を山分け。1回押すごとに[[fee|手数料]]が少しかかります。",
+  money_daruma:"全員が参加費 0.01 SOL を[[pot|賞金プール]]に入れます。最初にゴールした人がプール（0.04 SOL）を総取り。1回押すごとに[[fee|手数料]]が少しかかります。",
+  ai_rules_last:"我慢して、最後の最後に押した人が勝つ。駆け引きのゲームだ。", ai_rules_tug:"考えるな、連打しろ！チームの合計で勝負が決まる。", ai_rules_daruma:"私が鬼だ。振り向いたときに動いたら、スタートからやり直しだぞ。",
+  go_start:"参加費を払ってスタート", host_start:"参加費 0.01 SOL を賞金プールへ", tx_title:"トランザクション", s_mine:"あなた", s_total:"会場の合計", s_med:"確定時間（中央値）",
+  you:"あなた", times:"回", last_label:"最後に押した人：", nobody:"最初に押すのは誰だ？", tap:"押す！", left:"あと{n}回", team_a:"あなたのチーム", team_b:"相手チーム", pull:"引く！", run:"進む！", stop:"止まれ！",
+  pot_l:"賞金プール", myfee_l:"あなたの手数料", d_green:"だ・る・ま・さ・ん・が……", d_red:"転んだ！！", confirming:"確定中…", reset_ix:"戻された",
+  tips:["押すたびに、あなたの[[wallet|ウォレット]]が[[sign|署名]]した[[tx|トランザクション]]が送られています","送ったトランザクションは1秒もかからず[[final|確定]]し、誰にも取り消せません","勝ち負けと賞金を決めているのは運営ではなく、[[program|プログラム]]です","1回の[[fee|手数料]]は約0.000005 SOL。右上の残高が少しずつ減っています","右の文字列は、あなたの[[secret|秘密鍵]]でしか作れない[[sign|署名]]です"],
+  win_me:"あなたの勝ち！", win_other:"{name}の勝ち", win_team_a:"あなたのチームの勝ち！", win_team_b:"相手チームの勝ち", no_win:"勝者なし",
+  pl_title:"このゲームでのお金の動き", pl_entry:"参加費（[[pot|賞金プール]]へ）", pl_fee:"[[fee|手数料]] × {n}回", pl_prize:"賞金", pl_total:"このゲームの収支", see_wallet:"ウォレット全体の動きを見る",
+  big_pre:"あなたはさっき", big_post:"回、[[chain|ブロックチェーン]]を使いました", big_sub:"会場全体では{total}回。確定時間の中央値は{med}ミリ秒でした。",
+  pick:"知りたいものを選んでね",
+  t1:"トランザクション履歴", t2:"ウォレットの動き", t3:"ゲームでのSolanaの動き", t4:"Solanaでできること",
+  hint:"ヒント", answer:"答え", close:"閉じる", prev:"前へ", next:"次へ",
+  t1_h:"あなたが送ったトランザクション", t1_q:"この履歴は、誰が見られる？", t1_hint:"あなたのスマホの中だけに保存されているわけではありません。", t1_a:"世界中の誰でも。[[explorer|Explorer]]に[[address|アドレス]]を入れると、同じ記録が見られます。だから運営もこっそり書き換えられません。",
+  t2_h:"ウォレットの動き", t2_q:"勝っても負けても必ず減っていたお金は何？", t2_hint:"1回押すたびに、少しずつかかっていました。", t2_a:"[[fee|手数料]]です。1回約0.000005 SOLととても安いですが、送るたびに必ずかかります。勝ったときの賞金は、[[program|プログラム]]が賞金プールから自動で送ってきたものです。",
+  t3_h:"ゲームの裏で起きていたこと", t3_last:["タイマーと「最後に押した人」は、[[program|プログラム]]が管理","締切のあとに届いた押しは、プログラムが自動で拒否","参加費は[[pot|賞金プール]]に集まり、勝った人に自動で支払われた"], t3_tug:["両チームの押した回数を、[[program|プログラム]]が数えた","20秒の締切もプログラムが判定","[[pot|賞金プール]]は勝ったチームの2人に自動で山分け"], t3_daruma:["鬼の合図の順番は、開始前に[[hash|ハッシュ]]で公開済み","「転んだ」の間の押しは、プログラムがスタートに戻した","だから鬼（AI）も後出しでずるはできない"],
+  t3_q:"勝ち負けと賞金を決めたのは誰？", t3_hint:"運営のサーバーではありません。", t3_a:"[[solana|Solana]]の上の[[program|プログラム]]です。ルールはプログラムに書かれていて、全員の押しが順番どおりに処理されました。賞金も自動で送られるので、運営は結果もお金も変えられません。",
+  t4_h:"同じ仕組みでできること", t4_list:["送金：世界中に数秒、手数料ほぼ0で送れる","支払い：お店でQRを読んで払う（Solana Pay）","デジタルの持ち物：チケット、会員証、作品（[[nft|NFT]]）","投票：改ざんできない投票や記録","ゲーム：今日みたいに、1手ごとに記録が残るゲーム"],
+  t4_q:"今日の「押す」と、お金を送ることの違いは？", t4_hint:"どちらも、あなたの[[secret|秘密鍵]]で[[sign|署名]]して送っています。", t4_a:"仕組みはまったく同じ[[tx|トランザクション]]です。中身が「押した」か「お金を送った」かが違うだけ。今日の体験は、そのまま送金の練習でした。",
+  again:"ほかのゲームで遊ぶ",
+  w_title:"ウォレット", w_now:"いまの残高", w_diff:"はじめから {d} SOL", w_spark:"残高の動き（左がはじめ、右がいま）", w_by_game:"ゲームごとの収支", w_ledger:"すべての動き", w_addr:"あなたの[[address|アドレス]]", w_none:"まだゲームをしていません",
+  l_recv:"パーティーから受け取り", l_rent:"参加登録の[[rent|保管料]]", l_entry:"{game}の参加費", l_fee:"{game}の手数料 × {n}回", l_prize:"{game}の賞金",
+  c_title:"このウォレットを本物のウォレットにつなげる", c_sub:"さっきまで使っていたウォレットは、そのままあなたのものです。[[phantom|Phantom]]などのアプリに移せます。",
+  c_steps:["Phantomをインストールする（<a href=\"https://phantom.com\" target=\"_blank\" rel=\"noopener\">phantom.com</a>）","下の注意を読んで、[[secret|秘密鍵]]を表示してコピー","Phantomで「ウォレットを追加」→「秘密鍵をインポート」に貼り付け","設定で「[[devnet|テストネット]]モード」をオンにすると、今日の記録が見られます"],
+  c_warn:"[[secret|秘密鍵]]は、ウォレットの中身をすべて動かせるカギです。本物のお金が入ったウォレットの鍵は、絶対に人に見せない・送らないでください。このウォレットは今日のゲーム用です。",
+  c_show:"注意を読んだので、秘密鍵を表示する", c_copy:"コピー", c_copied:"コピーしました", c_copyfail:"長押しで選択してコピーしてね", c_nokey:"このブラウザではカギを表示できません",
+  gl_title:"用語集", gl_sub:"気になる言葉をタップすると、意味が出てきます。文章の中の点線の言葉もタップできます。", gl_ph:"言葉をさがす",
+
+  home_gloss:"先に用語をのぞいてみる（6カテゴリ・56語）", sel_gloss:"わからない言葉は用語集へ（56語）", rules_terms:"このゲームに出てくる言葉（タップで意味）", today_terms:"今日出てきた言葉（タップで意味）", review_gloss:"用語集でカテゴリ別に復習する", open_phantom_guide:"Phantomへの移し方を1ステップずつ見る", w_gloss:"お金とトークンの言葉を覚える",
+  gl_progress:"覚えた言葉 {n} / {all}", cat_prog:"{n} / {all} 覚えた", flash_start:"カードで覚える", flash_tap:"タップして意味を見る", flash_yet:"まだ", flash_got:"覚えた！", flash_done:"このカテゴリを1周しました！", flash_count:"{i} / {all}", learn_mark:"覚えたにする", learned:"覚えた ✓",
+  m_qr:"参加用QRコード", m_phantom:"Phantomにつなげる",
+  qr_title:"参加用QRコード", qr_sub:"大画面やパソコンにこの画面を映して、参加者はスマホのカメラで読み取ります。", qr_url_l:"参加用のURL（だれでも開ける公開URL）", qr_make:"QRコードを作る", qr_err:"https:// から始まるURLを入れてね", qr_nolib:"QRコードを作れませんでした。通信を確認してもう一度試してね", qr_how_h:"QRで参加できるようにする手順",
+  qr_how:["このHTMLをGitHubのリポジトリに index.html として置く","Settings → Pages で、Branch を main、フォルダを /(root) にして Save","数分後に出る https://〇〇.github.io/リポジトリ名/ をここに入れて「QRコードを作る」","そのURLで開いたこの画面を大画面に映し、みんなにスマホのカメラで読み取ってもらう"],
+  pg_title:"Phantomにつなげる", pg_sub:"今日のウォレットをPhantomに移して、本物のウォレットとして使えるようにします。画面の英語のボタン名もそのまま載せています。", pg_new:"はじめてPhantomを使う", pg_have:"もうPhantomを持っている", pg_note:"Phantomの表示言語や版によって、ボタンの名前や場所が少し違うことがあります。", pg_step:"ステップ {i} / {all}", pg_tap:"タップ", pg_done:"完了！",
+  m_games:"ゲームを選ぶ", m_learn:"さっきのゲームの振り返り", m_wallet:"ウォレット（残高と履歴）", m_gloss:"用語集", m_ai:"AIアシスタント", m_reset:"最初からやり直す",
+  fab_label:"AIに聞く", chat_title:"AIアシスタント", send:"送信", chat_ph:"わからないことを聞いてね", ask_ai:"AIに聞く",
+  chat_hello:"こんにちは！さっきのゲームのことや、わからない言葉があれば何でも聞いてね。",
+  chips:["お金はどう動いた？","秘密鍵って何？","危なくないの？","次は何をすればいい？","用語集を開く"],
+  bot_money:"今の残高は {bal} SOL。はじめに受け取った 0.05 SOL から、参加費と手数料が減って、勝ったら賞金が入ってきます。くわしくはメニューの「ウォレット」で、ゲームごとの収支が見られるよ。",
+  bot_safe:"今日のゲームは[[devnet|テストネット]]で動いているので、ここのSOLには価値がなく安心です。本物のお金を扱うときに一番大事なのは、[[secret|秘密鍵]]を誰にも見せないこと。",
+  bot_next:"気に入ったら、今日のウォレットを[[phantom|Phantom]]に取り込んでみよう。メニューの「Phantomにつなげる」で1ステップずつ案内するよ。",
+  bot_win:"勝ち負けは運営じゃなく[[program|プログラム]]が決めていて、賞金も自動で送られたんだ。だから誰もずるできない。",
+  bot_term:"「{term}」は、{short}。{body}",
+  bot_default:"いい質問！まだうまく答えられないけど、用語集の56語にヒントがあるかも。下の「用語集を開く」から探してみてね。", bot_gloss:"用語集を開くね。6つのカテゴリに分かれていて、カードで覚えることもできるよ。",
+  ai:{
+    last:{start:["ラストワン開幕！最後に押していた人がプールを総取りだ。","さあ始まった。押したい気持ちをこらえて……"],first:["{name}の一押し！人生初のトランザクションかも。","{name}が参戦！ようこそWeb3へ。"],change:["{name}が奪い返した！","{name}、ここで割り込む！","最後に押した人が{name}に変わった！"],low:["残り3秒！誰が押す！？","ここで押すのは勇気か、無謀か！"],explain:["今の一押しは{ms}ミリ秒で確定。もう誰にも取り消せない。","以前のSolanaなら確定まで12.8秒。この勝負、成立してなかった。","会場でもう{total}回。全部チェーンに刻まれてる。"],end:"決着！最後に押していたのは{name}！"},
+    tug:{start:["綱引きスタート！連打だ連打！","考えるな、押せ！"],lead:["{team}がリード！","{team}が押し込んでる！"],explain:["会場でもう{total}回。全部チェーンに刻まれてる。","1回{ms}ミリ秒で確定。だから旗がすぐ動く。"],end:"決着！{team}の勝ち。合計{total}回の大熱戦！"},
+    daruma:{start:["だるまさんが転んだ、スタート！私が鬼だ。"],caught:["{name}、動いた！スタートに戻れ！","見たぞ{name}！やり直し！"],lead:["{name}がトップ！ゴールまであと少し。","{name}、速い！"],explain:["鬼の合図の順番は、始める前に暗号で公開済み。私も後出しはできない。","今の一歩も{ms}ミリ秒で確定。"],end:"ゴール！一番乗りは{name}！"}
+  }
+},
+en: {
+  home_tag:"Your Web3 debut starts with a game with friends", home_sub:"Just play with friends. No setup needed.", start:"Get started", browser_note:"Open in Safari or Chrome",
+  login_title:"Sign in", login_sub:"Join in one tap with your account", lang:"Language", google:"Continue with Google", or:"or", nick_ph:"Nickname", nick_join:"Join with a nickname", nick_err:"Enter a nickname",
+  choose_acct:"Choose an account",
+  prep_title:"Welcome, {name}", prep1g:"Signed in", prep1n:"Nickname saved", prep2:"Creating your [[wallet|wallet]]", prep3:"Receiving 0.05 [[sol|SOL]] from the party", prep4:"Registering ([[rent|rent]] 0.0015 SOL)",
+  select_title:"Pick a game", select_sub:"In every game, each tap becomes a [[solana|Solana]] [[tx|transaction]].", entry:"Entry 0.01 SOL",
+  g_last:"Last One", g_last_d:"The last tap standing wins", g_tug:"Tug of War", g_tug_d:"Tap with your team to pull the rope", g_daruma:"Red Light, Green Light", g_daruma_d:"Freeze when the AI turns around",
+  r_last:["When the timer hits 0, the last person who tapped wins","Each tap resets the timer to 10 seconds","You can tap up to 10 times"],
+  r_tug:["Tap your team's button as fast as you can","The flag moves toward the side pulling harder","After 20 seconds, the side the flag is on wins"],
+  r_daruma:["Tap to move while the light is green","Tap on red and you're sent back to the start","First to the finish wins"],
+  money_rule_h:"How the money moves",
+  money_last:"Everyone puts a 0.01 SOL entry fee into the [[pot|prize pool]]. The winner takes the whole pool (0.04 SOL). Each tap costs a small [[fee|fee]].",
+  money_tug:"Everyone puts a 0.01 SOL entry fee into the [[pot|prize pool]]. The two players on the winning team split it (0.04 SOL). Each tap costs a small [[fee|fee]].",
+  money_daruma:"Everyone puts a 0.01 SOL entry fee into the [[pot|prize pool]]. The first to finish takes it all (0.04 SOL). Each tap costs a small [[fee|fee]].",
+  ai_rules_last:"Hold your nerve and tap at the very end. It's a game of timing.", ai_rules_tug:"Don't think, just tap! Your team's total decides it.", ai_rules_daruma:"I'm watching. Move when I turn around and you start over.",
+  go_start:"Pay entry and start", host_start:"0.01 SOL entry fee into the prize pool", tx_title:"Transactions", s_mine:"You", s_total:"Everyone", s_med:"Finality (median)",
+  you:"You", times:"", last_label:"Last tap: ", nobody:"Who taps first?", tap:"TAP!", left:"{n} left", team_a:"Your team", team_b:"Rival team", pull:"PULL!", run:"GO!", stop:"FREEZE!",
+  pot_l:"Prize pool", myfee_l:"Your fees", d_green:"Green light……", d_red:"RED LIGHT!", confirming:"Confirming…", reset_ix:"Sent back",
+  tips:["Every tap sends a [[tx|transaction]] [[sign|signed]] by your [[wallet|wallet]]","Each transaction is [[final|final]] in under a second. Nobody can undo it","Winners and prizes are decided by a [[program|program]], not by us","Each [[fee|fee]] is about 0.000005 SOL. Watch your balance tick down at the top","That string on the right is a [[sign|signature]] only your [[secret|private key]] can make"],
+  win_me:"You win!", win_other:"{name} wins", win_team_a:"Your team wins!", win_team_b:"The rival team wins", no_win:"No winner",
+  pl_title:"Money in this game", pl_entry:"Entry fee (to the [[pot|prize pool]])", pl_fee:"[[fee|Fees]] × {n}", pl_prize:"Prize", pl_total:"Net for this game", see_wallet:"See your whole wallet",
+  big_pre:"Just now, you used a [[chain|blockchain]]", big_post:"times", big_sub:"{total} times across the room. Median finality: {med} ms.",
+  pick:"Pick what you want to know",
+  t1:"Your transactions", t2:"Your wallet", t3:"Solana in the game", t4:"What Solana can do",
+  hint:"Hint", answer:"Answer", close:"Close", prev:"Prev", next:"Next",
+  t1_h:"Transactions you sent", t1_q:"Who can see this history?", t1_hint:"It isn't stored only on your phone.", t1_a:"Anyone in the world. Enter your [[address|address]] on an [[explorer|explorer]] and you'll see the same record. That's why we can't quietly change it.",
+  t2_h:"Your wallet", t2_q:"Which cost came out whether you won or lost?", t2_hint:"It was charged a little with every tap.", t2_a:"[[fee|Fees]]. About 0.000005 SOL each — tiny, but charged every time. Prizes were sent automatically from the prize pool by the [[program|program]].",
+  t3_h:"What happened behind the game", t3_last:["A [[program|program]] kept the timer and the last tapper","Taps after the deadline were rejected by the program","Entry fees went into the [[pot|prize pool]] and were paid to the winner automatically"], t3_tug:["A [[program|program]] counted each team's taps","The 20-second deadline was judged by the program too","The [[pot|prize pool]] was split between the winning team automatically"], t3_daruma:["The order of the lights was published as a [[hash|hash]] before the start","Taps on red were sent back by the program","So the AI can't cheat by changing its calls"],
+  t3_q:"Who decided the winner and the prize?", t3_hint:"It wasn't our server.", t3_a:"A [[program|program]] on [[solana|Solana]]. The rules live in the program and every tap was processed in order. Prizes are paid automatically, so we can't change the result or the money.",
+  t4_h:"What the same technology can do", t4_list:["Payments: send money worldwide in seconds for almost nothing","Checkout: scan a QR to pay at a shop (Solana Pay)","Digital items: tickets, memberships, art ([[nft|NFTs]])","Voting: votes and records nobody can tamper with","Games: like today, where every move is recorded"],
+  t4_q:"What's the difference between today's taps and sending money?", t4_hint:"Both are [[sign|signed]] with your [[secret|private key]] and sent.", t4_a:"They're the exact same kind of [[tx|transaction]]. Only the content differs: a tap or a payment. Today was practice for sending money.",
+  again:"Play another game",
+  w_title:"Wallet", w_now:"Balance now", w_diff:"{d} SOL since you started", w_spark:"Balance over time (left: start, right: now)", w_by_game:"Net by game", w_ledger:"All activity", w_addr:"Your [[address|address]]", w_none:"No games yet",
+  l_recv:"Received from the party", l_rent:"Registration [[rent|rent]]", l_entry:"{game} entry fee", l_fee:"{game} fees × {n}", l_prize:"{game} prize",
+  c_title:"Connect this wallet to a real wallet", c_sub:"The wallet you just used is yours. You can move it into an app like [[phantom|Phantom]].",
+  c_steps:["Install Phantom (<a href=\"https://phantom.com\" target=\"_blank\" rel=\"noopener\">phantom.com</a>)","Read the warning below, then show and copy your [[secret|private key]]","In Phantom: Add wallet → Import private key, and paste it","Turn on [[devnet|Testnet]] mode in settings to see today's activity"],
+  c_warn:"A [[secret|private key]] controls everything in a wallet. Never show or send the key of a wallet that holds real money. This wallet is for today's game.",
+  c_show:"I've read this. Show my private key", c_copy:"Copy", c_copied:"Copied", c_copyfail:"Long-press to select and copy", c_nokey:"This browser can't show the key",
+  gl_title:"Glossary", gl_sub:"Tap a word to see what it means. Dotted words in any text can be tapped too.", gl_ph:"Search words",
+
+  home_gloss:"Peek at the glossary first (6 categories, 56 words)", sel_gloss:"Stuck on a word? Open the glossary (56 words)", rules_terms:"Words in this game (tap for meaning)", today_terms:"Words you met today (tap for meaning)", review_gloss:"Review by category in the glossary", open_phantom_guide:"Move this wallet to Phantom, step by step", w_gloss:"Learn the money and token words",
+  gl_progress:"Words learned {n} / {all}", cat_prog:"{n} / {all} learned", flash_start:"Learn with cards", flash_tap:"Tap to see the meaning", flash_yet:"Not yet", flash_got:"Got it!", flash_done:"You finished this category!", flash_count:"{i} / {all}", learn_mark:"Mark as learned", learned:"Learned ✓",
+  m_qr:"Join QR code", m_phantom:"Connect to Phantom",
+  qr_title:"Join QR code", qr_sub:"Show this screen on a big screen or laptop. Players scan it with their phone camera.", qr_url_l:"Join URL (a public URL anyone can open)", qr_make:"Make QR code", qr_err:"Enter a URL starting with https://", qr_nolib:"Couldn't make the QR code. Check your connection and try again", qr_how_h:"How to make the QR work",
+  qr_how:["Put this HTML in a GitHub repository as index.html","In Settings → Pages, set Branch to main and folder to /(root), then Save","After a few minutes, enter https://NAME.github.io/REPO/ here and tap Make QR code","Open that URL on a big screen and have everyone scan it with their phone camera"],
+  pg_title:"Connect to Phantom", pg_sub:"Move today's wallet into Phantom so you can keep using it as a real wallet. Button names are shown as they appear in the app.", pg_new:"New to Phantom", pg_have:"Already have Phantom", pg_note:"Button names and positions can differ slightly depending on Phantom's language and version.", pg_step:"Step {i} / {all}", pg_tap:"Tap", pg_done:"Done!",
+  m_games:"Pick a game", m_learn:"Last game recap", m_wallet:"Wallet (balance and history)", m_gloss:"Glossary", m_ai:"AI assistant", m_reset:"Start over",
+  fab_label:"Ask AI", chat_title:"AI assistant", send:"Send", chat_ph:"Ask anything you're unsure about", ask_ai:"Ask AI",
+  chat_hello:"Hi! Ask me anything about the game or any word you didn't get.",
+  chips:["How did my money move?","What's a private key?","Is this safe?","What should I do next?","Open the glossary"],
+  bot_money:"Your balance is {bal} SOL. From the 0.05 SOL you received, entry fees and tap fees went out, and prizes came in when you won. Open Wallet in the menu to see each game.",
+  bot_safe:"Today's game runs on a [[devnet|testnet]], so this SOL has no value — totally safe. With real money, the most important rule is: never show your [[secret|private key]] to anyone.",
+  bot_next:"If you liked it, import today's wallet into [[phantom|Phantom]]. \"Connect to Phantom\" in the menu walks you through it step by step.",
+  bot_win:"The winner was decided by a [[program|program]], not by us, and prizes were paid automatically. Nobody can cheat.",
+  bot_term:"\"{term}\": {short}. {body}",
+  bot_default:"Good question! I can't answer that one well yet, but the 56-word glossary might help. Tap \"Open the glossary\" below.", bot_gloss:"Opening the glossary. It has 6 categories, and you can learn with cards too.",
+  ai:{
+    last:{start:["Last One begins! The last person to tap takes the pool.","Here we go. Hold back that urge to tap……"],first:["{name} taps! Maybe their first transaction ever.","{name} joins in! Welcome to Web3."],change:["{name} takes it back!","{name} jumps in!","The last tap is now {name}!"],low:["3 seconds left! Who's going to tap?!","Brave or reckless? 3 seconds!"],explain:["That tap was final in {ms} ms. Nobody can undo it.","Old Solana took 12.8 seconds to finalize. This game wouldn't have worked.","{total} taps in the room already, all on-chain."],end:"It's over! The last tap was {name}!"},
+    tug:{start:["Tug of war! Tap, tap, tap!","Don't think, just tap!"],lead:["{team} is ahead!","{team} is pulling hard!"],explain:["{total} taps already, all on-chain.","Each tap is final in {ms} ms, so the flag moves instantly."],end:"{team} wins! {total} taps in total!"},
+    daruma:{start:["Red light, green light — start! I'm watching."],caught:["{name} moved! Back to the start!","Caught you, {name}! Start over!"],lead:["{name} is in the lead!","{name} is fast!"],explain:["My calls were published as a hash before the start. I can't cheat.","That step was final in {ms} ms."],end:"Finish! {name} made it first!"}
+  }
+}};
+let lang = store.get("cp_lang") || "ja";
+const raw = (k) => { const s = D[lang][k]; return s === undefined ? D.ja[k] : s; };
+const fill = (s, v = {}) => s.replace(/\{(\w+)\}/g, (_, x) => v[x] ?? "");
+const rich = s => s.replace(/\[\[(\w+)\|([^\]]+)\]\]/g, (_, k, w) => `<button class="term" data-term="${k}" type="button" style="background:none;border:0;border-bottom:1.5px dotted var(--accent);padding:0;font:inherit;color:inherit">${w}</button>`);
+const plain = s => s.replace(/\[\[(\w+)\|([^\]]+)\]\]/g, "$2");
+const t = (k, v) => { const s = raw(k); return typeof s === "string" ? rich(fill(s, v)) : s; };
+const tp = (k, v) => plain(fill(raw(k), v));
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach(el => { el.innerHTML = t(el.dataset.t); });
+  $("nickIn").placeholder = tp("nick_ph"); $("glSearch").placeholder = tp("gl_ph"); $("chatIn").placeholder = tp("chat_ph");
+  document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+  $("backBtn").setAttribute("aria-label", lang === "ja" ? "戻る" : "Back"); $("fwdBtn").setAttribute("aria-label", lang === "ja" ? "進む" : "Forward");
+  $("qrHow").innerHTML = raw("qr_how").map(s => `<li>${esc(s)}</li>`).join("");
+  $("chips").innerHTML = raw("chips").map((c, i) => `<button type="button" data-chip="${i}">${c}</button>`).join("");
+  renderGloss(); updateBal(); refreshCurrent();
+}
+document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { lang = b.dataset.lang; store.set("cp_lang", lang); applyLang(); });
+
+// ================= 画面・戻る・進む =================
+const SCREENS = ["scrHome","scrLogin","scrPrep","scrSelect","scrRules","scrGame","scrLearn","scrWallet","scrGloss","scrCat","scrPhantom","scrQR"];
+const NO_REVISIT = ["scrPrep", "scrGame"];
+let stack = ["scrHome"], fwd = [];
+const cur = () => stack[stack.length - 1];
+function render(id) {
+  SCREENS.forEach(s => $(s).hidden = s !== id);
+  $("backBtn").disabled = stack.length <= 1 || id === "scrPrep";
+  $("fwdBtn").disabled = !fwd.length || id === "scrGame" || id === "scrPrep";
+  const showFab = loggedIn && id !== "scrGame" && id !== "scrPrep";
+  $("fab").hidden = !showFab; $("fabLabel").hidden = !showFab || chatOpen || chatHinted;
+  if (!showFab) closeChat();
+  window.scrollTo(0, 0);
+  onShow(id);
+}
+function go(id, replace) { fwd = []; if (replace) stack[stack.length - 1] = id; else if (cur() !== id) stack.push(id); render(id); }
+$("backBtn").onclick = () => {
+  if (stack.length <= 1) return;
+  if (cur() === "scrGame") stopGame();
+  const leaving = stack.pop(); if (!NO_REVISIT.includes(leaving)) fwd.push(leaving);
+  while (stack.length > 1 && NO_REVISIT.includes(cur())) stack.pop();
+  render(cur());
+};
+$("fwdBtn").onclick = () => { if (!fwd.length) return; const id = fwd.pop(); if (cur() === "scrGame") stopGame(); stack.push(id); render(id); };
+function onShow(id) {
+  if (id === "scrWallet") renderWallet();
+  if (id === "scrLearn") renderLearn();
+  if (id === "scrGloss") renderGloss();
+  if (id === "scrCat") renderCat();
+  if (id === "scrPhantom") renderPg();
+  if (id === "scrQR") initQR();
+}
+function refreshCurrent() { const id = cur(); if (["scrWallet", "scrLearn", "scrGloss", "scrCat", "scrPhantom", "scrQR"].includes(id)) onShow(id); if (id === "scrRules") fillRules(); }
+
+// ================= メニュー =================
+$("menuBtn").onclick = () => { $("drawerWho").innerHTML = loggedIn ? `<span class="av">${esc(me.name.slice(0, 1))}</span><div><b>${esc(me.name)}</b><br><span class="small num">${solp(bal)} SOL</span></div>` : `<span class="small">${tp("browser_note")}</span>`;
+  document.querySelectorAll(".mi").forEach(b => { const m = b.dataset.m; b.disabled = (!loggedIn && !["gloss", "qr", "phantom"].includes(m)) || (m === "learn" && !lastGame); });
+  $("drawerScrim").hidden = false; };
+const closeDrawer = () => { $("drawerScrim").hidden = true; };
+$("drawerClose").onclick = closeDrawer;
+$("drawerScrim").onclick = e => { if (e.target === $("drawerScrim")) closeDrawer(); };
+document.querySelectorAll(".mi").forEach(b => b.onclick = () => {
+  const m = b.dataset.m; closeDrawer();
+  if (cur() === "scrGame" && m !== "ai") stopGame();
+  if (m === "select") go("scrSelect"); else if (m === "learn") go("scrLearn"); else if (m === "wallet") go("scrWallet"); else if (m === "gloss") go("scrGloss");
+  else if (m === "phantom") go("scrPhantom"); else if (m === "qr") go("scrQR");
+  else if (m === "ai") openChat(); else if (m === "reset") resetAll();
+});
+$("balChip").onclick = () => { if (cur() !== "scrGame") go("scrWallet"); };
+
+// ================= 用語シート・用語集 =================
+let learned = new Set(); try { learned = new Set(JSON.parse(store.get("cp_learned") || "[]")); } catch (e) {}
+const saveLearned = () => store.set("cp_learned", JSON.stringify([...learned]));
+const catName = c => lang === "ja" ? c.ja : c.en;
+let termKey = TERM_KEYS[0];
+document.addEventListener("click", e => { const b = e.target.closest(".term,[data-tk]"); if (!b) return; e.preventDefault(); openTerm(b.dataset.term || b.dataset.tk); });
+function openTerm(k) { termKey = TERMS.ja[k] ? k : TERM_KEYS[0]; showTerm(); $("termScrim").hidden = false; }
+function showTerm() {
+  const [ti, sh, bo] = TERMS[lang][termKey]; const c = catOf(termKey);
+  $("termCat").textContent = c.icon + " " + catName(c); $("termTitle").textContent = ti; $("termShort").textContent = sh; $("termBody").textContent = bo;
+  const on = learned.has(termKey); const lb = $("termLearn"); lb.textContent = on ? tp("learned") : tp("learn_mark"); lb.classList.toggle("on", on);
+}
+const stepTerm = d => { const ks = catOf(termKey).keys; termKey = ks[(ks.indexOf(termKey) + d + ks.length) % ks.length]; showTerm(); };
+$("termClose").onclick = () => { $("termScrim").hidden = true; refreshCurrent(); };
+$("termScrim").onclick = e => { if (e.target === $("termScrim")) { $("termScrim").hidden = true; refreshCurrent(); } };
+$("termPrev").onclick = () => stepTerm(-1);
+$("termNext").onclick = () => stepTerm(1);
+$("termLearn").onclick = () => { if (learned.has(termKey)) learned.delete(termKey); else learned.add(termKey); saveLearned(); showTerm(); };
+$("termAsk").onclick = () => { $("termScrim").hidden = true; if (!loggedIn) return; openChat(); askBot(TERMS[lang][termKey][0] + (lang === "ja" ? "って何？" : "?")); };
+const chipsHtml = keys => keys.map(k => `<button type="button" data-tk="${k}" class="${learned.has(k) ? "done" : ""}">${TERMS[lang][k][0]}</button>`).join("");
+let curCat = CATS[0].id, flash = null;
+function renderGloss() {
+  const n = TERM_KEYS.filter(k => learned.has(k)).length;
+  $("glProg").textContent = tp("gl_progress", { n, all: TERM_KEYS.length }); $("glBar").style.width = (n / TERM_KEYS.length * 100) + "%";
+  const q = ($("glSearch").value || "").trim().toLowerCase();
+  $("catGrid").hidden = !!q;
+  $("catGrid").innerHTML = CATS.map(c => { const d = c.keys.filter(k => learned.has(k)).length; return `<button class="cat" data-cat="${c.id}"><span class="ic">${c.icon}</span><b>${catName(c)}</b><span class="small"><span>${tp("cat_prog", { n: d, all: c.keys.length })}</span><span>›</span></span><span class="pbar"><i style="width:${d / c.keys.length * 100}%"></i></span></button>`; }).join("");
+  $("catGrid").querySelectorAll("[data-cat]").forEach(b => b.onclick = () => openCat(b.dataset.cat));
+  $("glList").innerHTML = !q ? "" : TERM_KEYS.filter(k => (TERMS.ja[k].join("") + TERMS.en[k].join("")).toLowerCase().includes(q))
+    .map(k => `<button data-tk="${k}" class="${learned.has(k) ? "done" : ""}"><b>${TERMS[lang][k][0]}</b><span>${TERMS[lang][k][1]}</span></button>`).join("");
+}
+$("glSearch").oninput = renderGloss;
+function openCat(id) { curCat = id; flash = null; go("scrCat"); }
+function renderCat() {
+  const c = CATS.find(x => x.id === curCat), d = c.keys.filter(k => learned.has(k)).length;
+  $("catTitle").textContent = c.icon + " " + catName(c);
+  $("catProg").textContent = tp("cat_prog", { n: d, all: c.keys.length }); $("catBar").style.width = (d / c.keys.length * 100) + "%";
+  $("catList").innerHTML = c.keys.map(k => `<button data-tk="${k}" class="${learned.has(k) ? "done" : ""}"><b>${TERMS[lang][k][0]}</b><span>${TERMS[lang][k][1]}</span></button>`).join("");
+  $("catListWrap").hidden = !!flash; $("flashWrap").hidden = !flash;
+  if (flash) renderFlash();
+}
+function renderFlash() {
+  const c = CATS.find(x => x.id === curCat);
+  if (flash.i >= flash.keys.length) { $("flashCount").textContent = ""; $("flashCard").innerHTML = `<div><div class="ft">🎉</div><div class="fs">${tp("flash_done")}</div></div>`; $("flashYet").hidden = true; $("flashGot").textContent = tp("flash_start"); return; }
+  $("flashYet").hidden = false; $("flashGot").textContent = tp("flash_got");
+  const k = flash.keys[flash.i], [ti, sh, bo] = TERMS[lang][k];
+  $("flashCount").textContent = catName(c) + " · " + tp("flash_count", { i: flash.i + 1, all: flash.keys.length });
+  $("flashCard").innerHTML = flash.flip ? `<div><div class="ft">${ti}</div><div class="fs">${sh}</div><div class="fb">${bo}</div></div>` : `<div><div class="ft">${ti}</div><div class="small" style="margin-top:12px">${tp("flash_tap")}</div></div>`;
+}
+$("flashStart").onclick = () => { const c = CATS.find(x => x.id === curCat); flash = { keys: [...c.keys].sort((a, b) => learned.has(a) - learned.has(b)), i: 0, flip: false }; renderCat(); };
+$("flashCard").onclick = () => { if (flash && flash.i < flash.keys.length) { flash.flip = !flash.flip; renderFlash(); } };
+$("flashYet").onclick = () => { flash.i++; flash.flip = false; renderFlash(); };
+$("flashGot").onclick = () => { if (flash.i >= flash.keys.length) { $("flashStart").onclick(); return; } learned.add(flash.keys[flash.i]); saveLearned(); flash.i++; flash.flip = false; renderCat(); };
+$("flashClose").onclick = () => { flash = null; renderCat(); };
+$("homeGloss").onclick = () => go("scrGloss");
+$("selGloss").onclick = () => go("scrGloss");
+
+// ================= Phantom ガイド =================
+const PG = {
+ ja: {
+  copy:{t:"このアプリで秘密鍵をコピー",b:"メニューの「ウォレット」を開き、注意を読んでから「秘密鍵を表示する」→「コピー」。秘密鍵は、このあとPhantomに貼り付けるまで誰にも見せないでね。",h:"クリプト・パーティー",it:["秘密鍵を表示する","コピー"],hl:1},
+  install:{t:"Phantomアプリを入れる",b:"App StoreかGoogle Playで「Phantom」を検索してインストール。パソコンなら phantom.com からブラウザの拡張機能を入れます。",h:"App Store / Google Play",it:["Phantom","入手 / インストール"],hl:1},
+  already:{t:"「I already have a wallet」をタップ",b:"Phantomを開くと最初の画面が出ます。新しく作るのではなく「I already have a wallet（すでにウォレットを持っています）」を選びます。",h:"Phantom",it:["Create a new wallet","I already have a wallet"],hl:1},
+  other:{t:"「Other import options」をタップ",b:"スマホアプリでは「Other import options（その他のインポート方法）」を選びます。ブラウザの拡張機能では、この手順はありません。",h:"Phantom",it:["リカバリーフレーズで復元","Other import options"],hl:1},
+  importpk:{t:"「Import Private Key」をタップ",b:"秘密鍵で取り込むので「Import Private Key（秘密鍵をインポート）」を選びます。",h:"Phantom",it:["…","Import Private Key"],hl:1},
+  form:{t:"名前とネットワークを入れる",b:"アカウント名を入れます（自分にしか見えません。例：クリプトパーティー）。ネットワークは「Solana」を選びます。",h:"Import Private Key",it:["Name：クリプトパーティー","Network：Solana"],hl:1},
+  paste:{t:"秘密鍵を貼り付けて「Import」",b:"コピーした秘密鍵を貼り付けます。アドレスの最初と最後の数文字が表示されたら、このアプリの「ウォレット」画面のアドレスと同じか確かめてから「Import」。",h:"Import Private Key",it:["Private key：（貼り付け）","Import"],hl:1},
+  bio:{t:"顔認証や指紋認証を設定",b:"スマホアプリでは、最後にFace IDや指紋認証の設定が出ます。設定すると取り込み完了です。",h:"Phantom",it:["Face ID / 指紋をオン"],hl:0},
+  avatar:{t:"左上のプロフィールアイコンをタップ",b:"Phantomを開き、左上の自分のアイコン（プロフィール）をタップします。",h:"Phantom",it:["👤 プロフィール","ホーム"],hl:0},
+  manage:{t:"Settings →「Manage Accounts」",b:"「Settings（設定）」を開き、「Manage Accounts（アカウントの管理）」を選びます。",h:"Settings",it:["Manage Accounts","Developer Settings"],hl:0},
+  add:{t:"「Add Account」→「Import Private Key」",b:"「Add Account（アカウントを追加）」を押し、「Import Private Key（秘密鍵をインポート）」を選びます。",h:"Add Account",it:["Create New Account","Import Private Key"],hl:1},
+  dev:{t:"Settings →「Developer Settings」",b:"今日のSOLは練習用の[[devnet|テストネット]]にあるので、見るための設定をします。左上のプロフィールアイコン →「Settings」→「Developer Settings（開発者設定）」。",h:"Settings",it:["Manage Accounts","Developer Settings"],hl:1},
+  testnet:{t:"「Testnet Mode」をオン →「Solana Devnet」",b:"「Testnet Mode」をオンにして、ネットワークは「Solana Devnet」を選びます。「Solana Testnet」とまちがえないでね。",h:"Developer Settings",it:["Testnet Mode　●","Solana Devnet"],hl:1},
+  check:{t:"今日の記録を確認",b:"ホームに戻ると、上にテストネットモードの表示が出ます。今日のゲームで残ったSOLが見えれば成功！もとに戻すときは、同じ場所で「Testnet Mode」をオフにします。",h:"Phantom",it:["Testnet Mode","◎ 残高"],hl:1}
+ },
+ en: {
+  copy:{t:"Copy your private key here",b:"Open Wallet in the menu, read the warning, then tap Show my private key → Copy. Don't show the key to anyone before pasting it into Phantom.",h:"Crypto Party",it:["Show my private key","Copy"],hl:1},
+  install:{t:"Install the Phantom app",b:"Search for Phantom on the App Store or Google Play and install it. On a computer, add the browser extension from phantom.com.",h:"App Store / Google Play",it:["Phantom","Get / Install"],hl:1},
+  already:{t:"Tap \"I already have a wallet\"",b:"When Phantom opens, choose \"I already have a wallet\" instead of creating a new one.",h:"Phantom",it:["Create a new wallet","I already have a wallet"],hl:1},
+  other:{t:"Tap \"Other import options\"",b:"In the mobile app, choose \"Other import options\". The browser extension skips this step.",h:"Phantom",it:["Recovery phrase","Other import options"],hl:1},
+  importpk:{t:"Tap \"Import Private Key\"",b:"You're importing with a private key, so choose \"Import Private Key\".",h:"Phantom",it:["…","Import Private Key"],hl:1},
+  form:{t:"Enter a name and network",b:"Enter an account name (only you can see it). Choose \"Solana\" as the network.",h:"Import Private Key",it:["Name: Crypto Party","Network: Solana"],hl:1},
+  paste:{t:"Paste the key and tap \"Import\"",b:"Paste the private key you copied. When the first and last characters of the address appear, check they match the address on this app's Wallet screen, then tap Import.",h:"Import Private Key",it:["Private key: (paste)","Import"],hl:1},
+  bio:{t:"Set up Face ID or fingerprint",b:"The mobile app asks you to turn on biometric unlock at the end. Then you're done.",h:"Phantom",it:["Turn on Face ID / fingerprint"],hl:0},
+  avatar:{t:"Tap your profile avatar (top left)",b:"Open Phantom and tap your profile avatar in the upper left.",h:"Phantom",it:["👤 Profile","Home"],hl:0},
+  manage:{t:"Settings → \"Manage Accounts\"",b:"Open Settings and choose \"Manage Accounts\".",h:"Settings",it:["Manage Accounts","Developer Settings"],hl:0},
+  add:{t:"\"Add Account\" → \"Import Private Key\"",b:"Tap \"Add Account\", then choose \"Import Private Key\".",h:"Add Account",it:["Create New Account","Import Private Key"],hl:1},
+  dev:{t:"Settings → \"Developer Settings\"",b:"Today's SOL lives on a practice [[devnet|testnet]], so turn on the setting to see it: profile avatar → Settings → Developer Settings.",h:"Settings",it:["Manage Accounts","Developer Settings"],hl:1},
+  testnet:{t:"Turn on \"Testnet Mode\" → \"Solana Devnet\"",b:"Turn on Testnet Mode and choose \"Solana Devnet\" — not \"Solana Testnet\".",h:"Developer Settings",it:["Testnet Mode　●","Solana Devnet"],hl:1},
+  check:{t:"Check today's activity",b:"Back on the home screen, a testnet banner appears at the top. If you see the SOL left from today's game, you're done! Turn Testnet Mode off in the same place to go back.",h:"Phantom",it:["Testnet Mode","◎ Balance"],hl:1}
+ }
+};
+const PG_FLOW = { new: ["copy","install","already","other","importpk","form","paste","bio","dev","testnet","check"], have: ["copy","avatar","manage","add","form","paste","dev","testnet","check"] };
+let pgMode = "new", pgI = 0;
+function renderPg() {
+  document.querySelectorAll("[data-pg]").forEach(b => b.classList.toggle("on", b.dataset.pg === pgMode));
+  const flow = PG_FLOW[pgMode], st = PG[lang][flow[pgI]];
+  $("pgNo").textContent = tp("pg_step", { i: pgI + 1, all: flow.length });
+  $("pgT").textContent = st.t; $("pgB").innerHTML = rich(st.b);
+  $("pgMock").innerHTML = `<div class="mh">${esc(st.h)}</div>` + st.it.map((x, i) => `<div class="mi2 ${i === st.hl ? "hl" : ""}" data-tap="${tp("pg_tap")}">${esc(x)}</div>`).join("");
+  $("pgDots").innerHTML = flow.map((_, i) => `<i class="${i === pgI ? "on" : ""}"></i>`).join("");
+  $("pgPrev").textContent = "‹ " + tp("prev"); $("pgPrev").disabled = pgI === 0; $("pgPrev").style.opacity = pgI === 0 ? .4 : 1;
+  $("pgNext").textContent = pgI === flow.length - 1 ? tp("pg_done") : tp("next") + " ›";
+}
+document.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => { pgMode = b.dataset.pg; pgI = 0; renderPg(); });
+$("pgPrev").onclick = () => { if (pgI > 0) { pgI--; renderPg(); } };
+$("pgNext").onclick = () => { const f = PG_FLOW[pgMode]; if (pgI < f.length - 1) { pgI++; renderPg(); } else { pgI = 0; if (loggedIn) go("scrWallet"); else go("scrHome"); } };
+
+// ================= 参加用QR =================
+function defaultJoinUrl() {
+  const saved = store.get("cp_join_url"); if (saved) return saved;
+  try { const u = location.href; if (/^https?:/.test(u) && !/claude|anthropic|usercontent/.test(location.hostname)) return u.split("#")[0]; } catch (e) {}
+  return "";
+}
+function initQR() { if (!$("qrUrl").value) $("qrUrl").value = defaultJoinUrl(); if ($("qrUrl").value) makeQR(); else { $("qrBox").innerHTML = `<span class="small">▦</span>`; $("qrUrlText").textContent = ""; } }
+function makeQR() {
+  const u = $("qrUrl").value.trim(); $("qrErr").hidden = true;
+  if (!/^https?:\/\/\S+$/.test(u)) { $("qrErr").textContent = tp("qr_err"); $("qrErr").hidden = false; return; }
+  store.set("cp_join_url", u);
+  $("qrBox").innerHTML = "";
+  if (typeof QRCode === "undefined") { $("qrBox").innerHTML = `<span class="small">${tp("qr_nolib")}</span>`; return; }
+  new QRCode($("qrBox"), { text: u, width: 520, height: 520, colorDark: "#14213D", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+  $("qrUrlText").textContent = u;
+}
+$("qrMake").onclick = makeQR;
+$("qrUrl").oninput = () => { $("qrErr").hidden = true; };
+
+// ================= ウォレット =================
+const ALPH = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+function b58enc(bytes){let d=[0];for(const b of bytes){let c=b;for(let i=0;i<d.length;i++){c+=d[i]<<8;d[i]=c%58;c=(c/58)|0}while(c){d.push(c%58);c=(c/58)|0}}let o="";for(const b of bytes){if(b===0)o+="1";else break}for(let i=d.length-1;i>=0;i--)o+=ALPH[d[i]];return o}
+function b58dec(s){const by=[0];for(const ch of s){const v=ALPH.indexOf(ch);if(v<0)throw 0;let c=v;for(let i=0;i<by.length;i++){c+=by[i]*58;by[i]=c&255;c>>=8}while(c){by.push(c&255);c>>=8}}for(const ch of s){if(ch==="1")by.push(0);else break}return new Uint8Array(by.reverse())}
+const rand = n => crypto.getRandomValues(new Uint8Array(n));
+const wallet = { address: "", secret: "", key: null, real: false };
+async function initWallet() {
+  try {
+    const saved = store.get("cp_burner"); let pk8, pub;
+    if (saved) { const o = JSON.parse(saved); pk8 = b58dec(o.pk8); pub = b58dec(o.pub); wallet.key = await crypto.subtle.importKey("pkcs8", pk8, { name: "Ed25519" }, false, ["sign"]); }
+    else { const kp = await crypto.subtle.generateKey({ name: "Ed25519" }, true, ["sign", "verify"]); pub = new Uint8Array(await crypto.subtle.exportKey("raw", kp.publicKey)); pk8 = new Uint8Array(await crypto.subtle.exportKey("pkcs8", kp.privateKey)); wallet.key = kp.privateKey; store.set("cp_burner", JSON.stringify({ pk8: b58enc(pk8), pub: b58enc(pub) })); }
+    const sec = new Uint8Array(64); sec.set(pk8.slice(pk8.length - 32), 0); sec.set(pub, 32);
+    wallet.address = b58enc(pub); wallet.secret = b58enc(sec); wallet.real = true;
+  } catch (e) { wallet.address = b58enc(rand(32)); wallet.real = false; }
+}
+async function sign(text) { if (wallet.real) { try { return b58enc(new Uint8Array(await crypto.subtle.sign({ name: "Ed25519" }, wallet.key, new TextEncoder().encode(text)))); } catch (e) {} } return b58enc(rand(64)); }
+
+// 残高と台帳
+const FEE = 0.000005, ENTRY = 0.01, GRANT = 0.05, RENT = 0.0015;
+let bal = 0, ledger = [], balHist = [], gameLog = [];
+function addLedger(kind, amount, vars) { bal += amount; ledger.push({ kind, amount, vars: vars || {}, bal }); balHist.push(bal); updateBal(amount); }
+function updateBal(delta) {
+  const c = $("balChip"); if (!loggedIn) { c.hidden = true; return; }
+  c.hidden = false; c.textContent = "◎ " + solp(bal) + " SOL";
+  if (delta) { c.classList.remove("up", "down"); void c.offsetWidth; c.classList.add(delta > 0 ? "up" : "down"); }
+}
+function ledgerLabel(e) {
+  const g = e.vars.game ? tp("g_" + e.vars.game) : "";
+  return t({ recv: "l_recv", rent: "l_rent", entry: "l_entry", fee: "l_fee", prize: "l_prize" }[e.kind], { game: g, n: e.vars.n });
+}
+function renderWallet() {
+  $("wBal").textContent = solp(bal, 6) + " SOL";
+  const d = bal - GRANT; $("wDiff").innerHTML = `<span class="${d >= 0 ? "plus" : "minus"}">${tp("w_diff", { d: sol(d, 6) })}</span>`;
+  // スパークライン
+  const pts = balHist.length ? [...balHist] : [0]; const max = Math.max(...pts, 0.0001), min = Math.min(...pts, 0);
+  const xs = i => pts.length < 2 ? 0 : (i / (pts.length - 1)) * 296 + 2, ys = v => 84 - ((v - min) / (max - min || 1)) * 76;
+  const path = pts.map((v, i) => `${i ? "L" : "M"}${xs(i).toFixed(1)},${ys(v).toFixed(1)}`).join(" ");
+  $("spark").innerHTML = `<path d="${path} L298,86 L2,86 Z" fill="#E6F3FD"/><path d="${path}" fill="none" stroke="#2B9BEA" stroke-width="2.5" vector-effect="non-scaling-stroke"/>` + pts.map((v, i) => `<circle cx="${xs(i)}" cy="${ys(v)}" r="2.5" fill="#2B9BEA" vector-effect="non-scaling-stroke"/>`).join("");
+  $("wGames").innerHTML = gameLog.length ? gameLog.slice().reverse().map(g => `<div class="gamebox"><div class="hd2"><span>${tp("g_" + g.id)} · ${esc(g.result)}</span><span class="${g.net >= 0 ? "plus" : "minus"} num">${sol(g.net, 6)}</span></div>
+    <div class="r"><span>${tp("pl_entry")}</span><span class="num">−${ENTRY.toFixed(4)}</span></div>
+    <div class="r"><span>${tp("pl_fee", { n: g.taps })}</span><span class="num">−${(g.taps * FEE).toFixed(6)}</span></div>
+    <div class="r"><span>${tp("pl_prize")}</span><span class="num">+${g.prize.toFixed(4)}</span></div></div>`).join("") : `<p class="small">${tp("w_none")}</p>`;
+  $("wLedger").innerHTML = ledger.slice().reverse().map(e => { const ic = { recv: "⬇️", rent: "🗄️", entry: "🎟️", fee: "⚡", prize: "🏆" }[e.kind];
+    return `<div class="row"><span class="ic">${ic}</span><span>${ledgerLabel(e)}<br><span class="small num">${tp("w_now")} ${solp(e.bal, 6)}</span></span><span class="${e.amount >= 0 ? "plus" : "minus"} num">${sol(e.amount, 6)}</span></div>`; }).join("");
+  $("wAddr").textContent = wallet.address;
+  $("secretText").textContent = wallet.real ? wallet.secret : tp("c_nokey");
+}
+$("showSecret").onclick = () => { $("secretWrap").hidden = !$("secretWrap").hidden; };
+$("copySecret").onclick = async () => { try { await navigator.clipboard.writeText(wallet.secret); $("copyMsg").textContent = tp("c_copied"); } catch (e) { $("copyMsg").textContent = tp("c_copyfail"); } };
+
+// ================= ホーム・ログイン・準備 =================
+let me = { name: "" }, viaGoogle = false, loggedIn = false;
+$("homeStart").onclick = () => { if (loggedIn) go("scrSelect"); else go("scrLogin"); };
+$("googleBtn").onclick = () => { $("acctScrim").hidden = false; };
+$("acctClose").onclick = () => { $("acctScrim").hidden = true; };
+$("acctScrim").onclick = e => { if (e.target === $("acctScrim")) $("acctScrim").hidden = true; };
+$("acctBtn").onclick = () => { $("acctScrim").hidden = true; viaGoogle = true; prepare($("acctName").textContent); };
+$("nickIn").oninput = () => { $("nickErr").hidden = true; };
+$("nickBtn").onclick = () => { const v = $("nickIn").value.trim(); if (!v) { $("nickErr").hidden = false; return; } viaGoogle = false; prepare(v); };
+async function prepare(name) {
+  me.name = name;
+  $("prepTitle").textContent = tp("prep_title", { name });
+  const keys = [viaGoogle ? "prep1g" : "prep1n", "prep2", "prep3", "prep4"];
+  $("prepSteps").innerHTML = keys.map((k, i) => `<li id="pst${i}"><span class="d"></span><span>${t(k)}<code class="mono" id="pcode${i}"></code></span></li>`).join("");
+  go("scrPrep");
+  const done = i => { $("pst" + i).className = "done"; $("pst" + i).querySelector(".d").textContent = "✓"; };
+  const doing = i => { $("pst" + i).className = "doing"; };
+  done(0); doing(1); await initWallet(); await sleep(500); done(1); $("pcode1").textContent = wallet.address;
+  loggedIn = true;
+  doing(2); await sleep(650); addLedger("recv", GRANT); done(2); $("pcode2").textContent = "+0.05 SOL";
+  doing(3); await sleep(500); addLedger("rent", -RENT); done(3); $("pcode3").textContent = "−0.0015 SOL";
+  await sleep(400);
+  go("scrSelect", true);
+  if (!chatHinted) { $("fabLabel").hidden = false; setTimeout(() => { chatHinted = true; $("fabLabel").hidden = true; }, 5000); }
+}
+function resetAll() {
+  stopGame(); loggedIn = false; bal = 0; ledger = []; balHist = []; gameLog = []; myTx = []; lastGame = null; txAll = 0; times = [];
+  $("msgs").innerHTML = ""; chatStarted = false; closeChat(); updateBal();
+  stack = ["scrHome"]; fwd = []; render("scrHome");
+}
+
+// ================= ゲーム共通 =================
+let G = null, gameId = "", txAll = 0, times = [], myTx = [], feed = [], feedDirty = false, tipI = 0, lastGame = null;
+const BOT_NAMES = ["ミケ", "クロ", "シロ"];
+const GAME_TERMS = { last: ["tx", "fee", "pot", "final", "program", "slot"], tug: ["tx", "fee", "pot", "final", "program", "validator"], daruma: ["tx", "fee", "pot", "hash", "vrf", "program"] };
+const TODAY_TERMS = ["wallet", "address", "secret", "sign", "sol", "rent", "explorer", "chain", "phantom", "devnet"];
+document.querySelectorAll(".game-card").forEach(b => b.onclick = () => { gameId = b.dataset.game; fillRules(); go("scrRules"); });
+function fillRules() {
+  $("rulesTitle").textContent = tp("g_" + gameId);
+  $("rulesList").innerHTML = raw("r_" + gameId).map(s => `<li>${rich(s)}</li>`).join("");
+  $("moneyRule").innerHTML = t("money_" + gameId);
+  $("rulesAi").textContent = tp("ai_rules_" + gameId);
+  $("rulesTerms").innerHTML = chipsHtml(GAME_TERMS[gameId]);
+}
+$("rulesStart").onclick = () => startGame();
+
+let aiQ = [], aiBusy = false, aiTimer = null, lastAiAt = 0;
+function ai(text, urgent) { if (urgent) { aiQ = [text]; if (aiTimer) { clearInterval(aiTimer); aiTimer = null; aiBusy = false; } } else if (aiQ.length < 2) aiQ.push(text); if (!aiBusy) aiNext(); }
+function aiNext() {
+  if (!aiQ.length) { aiBusy = false; return; }
+  aiBusy = true; const text = aiQ.shift(); lastAiAt = performance.now();
+  const el = $("aiLine"); el.innerHTML = '<span class="ai-tag">AI</span>'; const sp = document.createElement("span"); el.appendChild(sp);
+  let i = 0; aiTimer = setInterval(() => { sp.textContent = text.slice(0, ++i); if (i >= text.length) { clearInterval(aiTimer); aiTimer = null; setTimeout(aiNext, 900); } }, 24);
+}
+const A = (k, v) => fill(pick(D[lang].ai[gameId][k]), v || {});
+function aiMaybe(text, gap = 3500) { if (performance.now() - lastAiAt > gap) ai(text); }
+
+function sendTx(p, ix, status) {
+  const ms = Math.round(110 + Math.random() * 110);
+  const item = { name: p.name, ix, sig: "", st: tp("confirming"), cls: "pend" };
+  feed.unshift(item); if (feed.length > 30) feed.pop();
+  txAll++;
+  if (p.isMe) { G.myCount++; bal -= FEE; G.myFee += FEE; updateBalQuiet(); }
+  (p.isMe ? sign(`${gameId}:${ix}:${me.name}:${G.myCount}:${Date.now()}`) : Promise.resolve(b58enc(rand(64)))).then(sig => { item.sig = sig; feedDirty = true; if (p.isMe) myTx.unshift({ ix, sig, ms, game: gameId }); });
+  feedDirty = true;
+  setTimeout(() => { times.push(ms); if (times.length > 400) times.shift(); if (status === "ng") { item.st = "✕ " + tp("reset_ix"); item.cls = "ng"; } else { item.st = "✓ " + ms + "ms"; item.cls = "ok"; } feedDirty = true; }, ms);
+  return ms;
+}
+function updateBalQuiet() { $("balChip").textContent = "◎ " + solp(bal) + " SOL"; const f = $("gFee"); if (f) f.textContent = G.myFee.toFixed(6); }
+function renderFeed() {
+  if (!feedDirty) return; feedDirty = false;
+  const ul = $("feed"); ul.innerHTML = "";
+  feed.slice(0, 6).forEach(f => {
+    const li = document.createElement("li");
+    const a = document.createElement("span"); a.textContent = f.name;
+    const b = document.createElement("span"); b.className = "sig mono"; b.textContent = f.sig ? `${f.ix} · ${f.sig}` : f.ix;
+    const c = document.createElement("span"); c.className = f.cls; c.textContent = f.st;
+    li.append(a, b, c); ul.appendChild(li);
+  });
+  $("sMine").textContent = G ? G.myCount : 0; $("sTotal").textContent = txAll; $("sMed").textContent = times.length ? median(times) + "ms" : "–";
+}
+function rotateTip() { const tips = raw("tips"); $("tip").innerHTML = "ⓘ " + rich(tips[tipI++ % tips.length]); }
+const potBar = () => `<div class="potbar"><div><b class="num">${(ENTRY * 4).toFixed(2)} SOL</b><span>${tp("pot_l")}</span></div><div><b class="num" id="gFee">0.000000</b><span>${tp("myfee_l")} (SOL)</span></div></div>`;
+
+async function startGame() {
+  stopGame();
+  feed = []; feedDirty = true; G = { id: gameId, myCount: 0, myFee: 0, over: false, players: [] };
+  G.players = [{ name: me.name, isMe: true }, ...BOT_NAMES.map(n => ({ name: n, isMe: false }))];
+  go("scrGame");
+  $("aiLine").innerHTML = '<span class="ai-tag">AI</span>';
+  rotateTip(); renderFeed();
+  ({ last: setupLast, tug: setupTug, daruma: setupDaruma })[gameId]();
+  $("overlay").hidden = false; $("oSmall").textContent = tp("host_start");
+  addLedger("entry", -ENTRY, { game: gameId });
+  for (const n of [3, 2, 1]) { $("oBig").textContent = n; await sleep(650); if (!G || G.over) { $("overlay").hidden = true; return; } }
+  $("overlay").hidden = true;
+  G.startAt = performance.now();
+  ai(A("start"), true);
+  G.tipH = setInterval(rotateTip, 6000);
+  G.tickH = setInterval(() => { G.tick(); renderFeed(); }, 80);
+}
+function stopGame() {
+  if (!G || G.over) return;
+  G.over = true; clearInterval(G.tickH); clearInterval(G.tipH); $("overlay").hidden = true;
+  settleMoney(0, tp("no_win"), true);
+}
+function settleMoney(prize, resultText, aborted) {
+  // 手数料は押すたびに引いているので、台帳にはまとめて1行で残す
+  bal += G.myFee; addLedger("fee", -G.myFee, { game: gameId, n: G.myCount });
+  if (prize > 0) addLedger("prize", prize, { game: gameId });
+  const net = -ENTRY - G.myFee + prize;
+  if (!aborted || G.myCount > 0) gameLog.push({ id: gameId, result: resultText, taps: G.myCount, prize, net });
+  if (aborted) return;
+  lastGame = { id: gameId, result: resultText, mine: G.myCount, total: txAll, med: median(times), taps: G.myCount, fee: G.myFee, prize, net };
+}
+async function finish(resultText, prize) {
+  if (G.over) return; G.over = true; clearInterval(G.tickH); clearInterval(G.tipH);
+  renderFeed();
+  settleMoney(prize, resultText, false);
+  await sleep(1700);
+  if (cur() !== "scrGame") return;
+  go("scrLearn", true);
+}
+
+// ---------------- ラストワン ----------------
+function setupLast() {
+  const P = G.players; P.forEach(p => { p.left = 10; p.presses = 0; p.lastAt = 0; p.aggro = p.isMe ? 0 : 0.8 + Math.random() * 0.7; });
+  G.last = null; G.deadline = 0; G.hardEnd = 0; G.warned = false;
+  $("stage").innerHTML = potBar() + `<p class="timer num" id="lTimer">10.0</p><p class="lastline" id="lLast">${tp("nobody")}</p><button class="push" id="lPush">${tp("tap")}<small id="lLeft">${tp("left", { n: 10 })}</small></button><ul class="board" id="lBoard"></ul>`;
+  const board = () => { $("lBoard").innerHTML = [...P].sort((a, b) => b.presses - a.presses).map(p => `<li class="${p === G.last ? "lead" : ""}"><span><b>${esc(p.name)}</b>${p.isMe ? `<span class="tagme">（${tp("you")}）</span>` : ""}${p === G.last ? `<span class="crown">●</span>` : ""}</span><span class="c">${p.presses}${tp("times")} · ${tp("left", { n: p.left })}</span></li>`).join(""); };
+  const press = p => {
+    if (G.over || !G.startAt || p.left < 1) return;
+    const now = performance.now(); if (now - p.lastAt < 300) return; p.lastAt = now;
+    const first = p.presses === 0, changed = G.last !== p;
+    p.left--; p.presses++; G.last = p; G.deadline = Math.min(now + 10000, G.hardEnd); G.warned = false;
+    const ms = sendTx(p, `press #${p.presses}`);
+    $("lLast").innerHTML = `${tp("last_label")}<b></b>`; $("lLast").querySelector("b").textContent = p.name;
+    if (p.isMe) { $("lLeft").textContent = tp("left", { n: p.left }); if (p.left < 1) $("lPush").disabled = true; }
+    if (first && p.isMe) ai(A("first", { name: p.name }));
+    else if (changed) aiMaybe(A("change", { name: p.name }), 2500);
+    if (p.isMe && G.myCount % 3 === 0) ai(A("explain", { ms, total: txAll }));
+    board();
+  };
+  board();
+  $("lPush").onclick = () => press(P[0]);
+  G.tick = () => {
+    if (!G.startAt) return;
+    const now = performance.now();
+    if (!G.deadline) { G.deadline = G.startAt + 10000; G.hardEnd = G.startAt + 90000; }
+    const left = Math.max(0, G.deadline - now) / 1000;
+    $("lTimer").textContent = left.toFixed(1); $("lTimer").classList.toggle("low", left < 3);
+    if (left < 3 && left > 0 && !G.warned && G.last) { G.warned = true; ai(A("low")); }
+    const el = (now - G.startAt) / 1000, fatigue = Math.max(0.15, 1 - el / 70);
+    P.slice(1).forEach(b => { let pr = 0; if (left < 1.3) pr = 0.11; else if (left < 2.6) pr = 0.04; else if (left < 5) pr = 0.008; if (b !== G.last && Math.random() < pr * b.aggro * fatigue) press(b); });
+    if (left <= 0) { const w = G.last; ai(fill(D[lang].ai.last.end, { name: w ? w.name : "—" }), true); finish(w ? (w.isMe ? tp("win_me") : tp("win_other", { name: w.name })) : tp("no_win"), w && w.isMe ? ENTRY * 4 : 0); }
+  };
+}
+
+// ---------------- 綱引き ----------------
+function setupTug() {
+  const P = G.players; P[0].team = "a"; P[1].team = "a"; P[2].team = "b"; P[3].team = "b";
+  P.forEach(p => { p.presses = 0; p.lastAt = 0; p.next = 0; });
+  G.a = 0; G.b = 0; G.dur = 20000; G.leadSaid = "";
+  $("stage").innerHTML = potBar() + `<p class="timer num" id="tTimer">20.0</p><div class="teams"><div class="a"><b class="num" id="tA">0</b>${tp("team_a")}<br><span class="small">${esc(P[0].name)} · ${P[1].name}</span></div><div class="b" style="text-align:right"><b class="num" id="tB">0</b>${tp("team_b")}<br><span class="small">${P[2].name} · ${P[3].name}</span></div></div><div class="rope"><div class="line"></div><div class="mid"></div><div class="flag" id="tFlag" style="left:50%"></div></div><button class="push" id="tPush">${tp("pull")}</button>`;
+  const press = p => {
+    if (G.over || !G.startAt) return;
+    const now = performance.now(); if (now - p.lastAt < 110) return; p.lastAt = now;
+    p.presses++; if (p.team === "a") G.a++; else G.b++;
+    const ms = sendTx(p, `pull #${p.presses}`);
+    if (p.isMe && G.myCount % 12 === 0) ai(A("explain", { ms, total: txAll }));
+  };
+  $("tPush").onclick = () => press(P[0]);
+  G.tick = () => {
+    if (!G.startAt) return;
+    const now = performance.now(), el = now - G.startAt, left = Math.max(0, G.dur - el) / 1000;
+    P.slice(1).forEach(b => { if (now >= b.next) { press(b); b.next = now + (b.team === "a" ? 230 : 205) + Math.random() * 230; } });
+    $("tTimer").textContent = left.toFixed(1); $("tTimer").classList.toggle("low", left < 3);
+    $("tA").textContent = G.a; $("tB").textContent = G.b;
+    const diff = G.a - G.b; $("tFlag").style.left = Math.max(6, Math.min(94, 50 - diff * 1.2)) + "%";
+    const lead = diff > 2 ? "a" : diff < -2 ? "b" : "";
+    if (lead && lead !== G.leadSaid) { G.leadSaid = lead; aiMaybe(A("lead", { team: tp(lead === "a" ? "team_a" : "team_b") }), 2500); }
+    if (left <= 0) { const w = G.a >= G.b ? "a" : "b"; ai(fill(D[lang].ai.tug.end, { team: tp(w === "a" ? "team_a" : "team_b"), total: txAll }), true); finish(w === "a" ? tp("win_team_a") : tp("win_team_b"), w === "a" ? ENTRY * 2 : 0); }
+  };
+}
+
+// ---------------- だるまさんが転んだ ----------------
+function setupDaruma() {
+  const P = G.players; P.forEach(p => { p.pos = 0; p.presses = 0; p.lastAt = 0; p.next = 0; p.speed = p.isMe ? 0 : 230 + Math.random() * 120; p.care = 0.6 + Math.random() * 0.35; });
+  G.light = "wait"; G.lightUntil = 0;
+  $("stage").innerHTML = potBar() + `<div class="oni" id="dOni">…</div><div class="track" id="dTrack"></div><button class="push" id="dPush">${tp("run")}</button>`;
+  const lanes = () => { $("dTrack").innerHTML = P.map(p => `<div class="lane ${p.isMe ? "me" : ""}"><span>${esc(p.name)}</span><div class="bar"><i style="width:${p.pos}%"></i></div></div>`).join(""); };
+  lanes();
+  const press = p => {
+    if (G.over || !G.startAt || G.light === "wait") return;
+    const now = performance.now(); if (now - p.lastAt < 120) return; p.lastAt = now;
+    p.presses++;
+    if (G.light === "red") { p.pos = 0; sendTx(p, `step #${p.presses}`, "ng"); ai(A("caught", { name: p.name }), true); }
+    else {
+      p.pos = Math.min(100, p.pos + 4);
+      const ms = sendTx(p, `step #${p.presses}`);
+      if (p.isMe && G.myCount % 10 === 0) ai(A("explain", { ms }));
+      const top = [...P].sort((a, b) => b.pos - a.pos)[0];
+      if (top.pos > 60 && top !== G.topSaid) { G.topSaid = top; aiMaybe(A("lead", { name: top.name }), 3000); }
+      if (p.pos >= 100) { ai(fill(D[lang].ai.daruma.end, { name: p.name }), true); finish(p.isMe ? tp("win_me") : tp("win_other", { name: p.name }), p.isMe ? ENTRY * 4 : 0); }
+    }
+    lanes();
+  };
+  $("dPush").onclick = () => press(P[0]);
+  const setLight = (l, dur) => {
+    G.light = l; G.lightUntil = performance.now() + dur; G.lightAt = performance.now();
+    const o = $("dOni"); o.className = "oni " + (l === "red" ? "red" : "green"); o.textContent = l === "red" ? tp("d_red") : tp("d_green");
+    $("dPush").classList.toggle("red", l === "red"); $("dPush").textContent = l === "red" ? tp("stop") : tp("run");
+  };
+  G.tick = () => {
+    if (!G.startAt) return;
+    const now = performance.now();
+    if (G.light === "wait") setLight("green", 1800 + Math.random() * 1800);
+    else if (now >= G.lightUntil) { if (G.light === "green") setLight("red", 1500 + Math.random() * 600); else setLight("green", 1600 + Math.random() * 2200); }
+    P.slice(1).forEach(b => {
+      if (now < b.next) return; b.next = now + b.speed + Math.random() * 140;
+      if (G.light === "green") { if (G.lightUntil - now > 220 || Math.random() > b.care) press(b); }
+      else if (now - G.lightAt < 260 && Math.random() > b.care + 0.25) press(b);
+    });
+    if (now - G.startAt > 75000 && !G.over) { const top = [...P].sort((a, b) => b.pos - a.pos)[0]; ai(fill(D[lang].ai.daruma.end, { name: top.name }), true); finish(top.isMe ? tp("win_me") : tp("win_other", { name: top.name }), top.isMe ? ENTRY * 4 : 0); }
+  };
+}
+
+// ================= 振り返り =================
+let topic = null; const opened = {}; const TOPICS = ["t1", "t2", "t3", "t4"];
+function renderLearn() {
+  const s = lastGame; if (!s) return;
+  $("resultLine").textContent = s.result;
+  $("plRows").innerHTML = `<div class="row"><span class="ic">🎟️</span><span>${t("pl_entry")}</span><span class="minus num">−${ENTRY.toFixed(4)}</span></div>
+    <div class="row"><span class="ic">⚡</span><span>${t("pl_fee", { n: s.taps })}</span><span class="minus num">−${s.fee.toFixed(6)}</span></div>
+    <div class="row"><span class="ic">🏆</span><span>${t("pl_prize")}</span><span class="${s.prize > 0 ? "plus" : "muted"} num">+${s.prize.toFixed(4)}</span></div>
+    <div class="pl-total"><span style="font-weight:700">${t("pl_total")}</span><b class="num ${s.net >= 0 ? "plus" : "minus"}">${sol(s.net, 6)} SOL</b></div>`;
+  $("bigN").textContent = s.mine;
+  $("bigSub").textContent = tp("big_sub", { total: s.total, med: s.med });
+  $("learnTerms").innerHTML = chipsHtml([...new Set([...GAME_TERMS[s.id], ...TODAY_TERMS])]);
+  const items = { t1: "🧾", t2: "👛", t3: "⚙️", t4: "🌏" };
+  $("topics").innerHTML = TOPICS.map(k => `<button class="topic ${topic === k ? "on" : ""}" data-k="${k}"><span class="ic">${items[k]}</span><b>${tp(k)}</b></button>`).join("");
+  $("topics").querySelectorAll(".topic").forEach(b => b.onclick = () => { topic = topic === b.dataset.k ? null : b.dataset.k; renderLearn(); if (topic) $("detail").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  renderDetail();
+}
+function quiz(k, q, hint, ans) {
+  const o = opened[k] || {};
+  return `<div class="quiz"><div class="q">Q. ${q}</div><div class="btns"><button class="btn btn-sub btn-small" data-qk="${k}" data-w="h">${tp("hint")}</button><button class="btn btn-sub btn-small" data-qk="${k}" data-w="a">${tp("answer")}</button></div>${o.h ? `<div class="hint">${hint}</div>` : ""}${o.a ? `<div class="ans">${ans}</div>` : ""}</div>`;
+}
+function renderDetail() {
+  const el = $("detail"); if (!topic) { el.hidden = true; return; } el.hidden = false;
+  const s = lastGame; const n = myTx.filter(x => x.game === s.id).length;
+  const head = h => `<div class="detail-hd"><button class="ib" id="dPrev" aria-label="prev">‹</button><h4>${h}</h4><button class="ib" id="dNext" aria-label="next">›</button><button class="ib" id="dClose" aria-label="close">×</button></div>`;
+  let h = "";
+  if (topic === "t1") {
+    const list = myTx.filter(x => x.game === s.id);
+    h = head(tp("t1_h")) + `<div class="small mono">${wallet.address}</div><div class="rows">${list.slice(0, 8).map(x => `<div class="row"><span class="ic">⚡</span><span class="sig mono">${x.ix} · ${x.sig}</span><span class="ok">${x.ms}ms</span></div>`).join("") || `<div class="row"><span></span><span class="muted">—</span><span></span></div>`}${n > 8 ? `<div class="small center">… +${n - 8}</div>` : ""}</div>` + quiz("t1", t("t1_q"), t("t1_hint"), t("t1_a"));
+  } else if (topic === "t2") {
+    h = head(tp("t2_h")) + `<div class="rows">${ledger.map(e => `<div class="row"><span class="ic">${{ recv: "⬇️", rent: "🗄️", entry: "🎟️", fee: "⚡", prize: "🏆" }[e.kind]}</span><span>${ledgerLabel(e)}</span><span class="${e.amount >= 0 ? "plus" : "minus"} num">${sol(e.amount, 6)}</span></div>`).join("")}<div class="pl-total"><span style="font-weight:700">${tp("w_now")}</span><b class="num">${solp(bal, 6)} SOL</b></div></div><button class="btn btn-sub btn-small" style="width:100%" id="dWallet">${tp("see_wallet")}</button>` + quiz("t2", t("t2_q"), t("t2_hint"), t("t2_a"));
+  } else if (topic === "t3") {
+    h = head(tp("t3_h")) + `<ul class="list">${raw("t3_" + s.id).map(x => `<li>${rich(x)}</li>`).join("")}</ul>` + quiz("t3", t("t3_q"), t("t3_hint"), t("t3_a"));
+  } else {
+    h = head(tp("t4_h")) + `<ul class="list">${raw("t4_list").map(x => `<li>${rich(x)}</li>`).join("")}</ul>` + quiz("t4", t("t4_q"), t("t4_hint"), t("t4_a"));
+  }
+  el.innerHTML = h;
+  const i = TOPICS.indexOf(topic);
+  $("dPrev").onclick = () => { topic = TOPICS[(i + 3) % 4]; renderLearn(); };
+  $("dNext").onclick = () => { topic = TOPICS[(i + 1) % 4]; renderLearn(); };
+  $("dClose").onclick = () => { topic = null; renderLearn(); };
+  const dw = $("dWallet"); if (dw) dw.onclick = () => go("scrWallet");
+  el.querySelectorAll("[data-qk]").forEach(b => b.onclick = () => { const k = b.dataset.qk; opened[k] = opened[k] || {}; opened[k][b.dataset.w] = true; renderDetail(); });
+}
+$("toWallet").onclick = () => go("scrWallet");
+$("learnGloss").onclick = () => go("scrGloss");
+$("learnPhantom").onclick = () => { pgI = 0; go("scrPhantom"); };
+$("toPhantom").onclick = () => { pgI = 0; go("scrPhantom"); };
+$("wGloss").onclick = () => openCat("money");
+$("againBtn").onclick = () => { Object.keys(opened).forEach(k => delete opened[k]); topic = null; go("scrSelect"); };
+
+// ================= AI アシスタント =================
+let chatOpen = false, chatStarted = false, chatHinted = false;
+function openChat() {
+  chatOpen = true; $("chat").hidden = false; $("fab").classList.add("open"); $("fabLabel").hidden = true;
+  if (!chatStarted) { chatStarted = true; botSay(tp("chat_hello")); }
+}
+function closeChat() { chatOpen = false; $("chat").hidden = true; $("fab").classList.remove("open"); }
+$("fab").onclick = () => chatOpen ? closeChat() : openChat();
+$("chatClose").onclick = closeChat;
+$("chatMin").onclick = closeChat;
+function addMsg(html, who) { const d = document.createElement("div"); d.className = "msg " + who; d.innerHTML = html; $("msgs").appendChild(d); $("msgs").scrollTop = $("msgs").scrollHeight; return d; }
+function botSay(text) { const d = addMsg("……", "a"); setTimeout(() => { d.innerHTML = rich(text); $("msgs").scrollTop = $("msgs").scrollHeight; }, 600); }
+function askBot(q) {
+  addMsg(esc(q), "u");
+  const s = q.toLowerCase();
+  const has = (...w) => w.some(x => s.includes(x));
+  for (const k of TERM_KEYS) {
+    const names = [TERMS.ja[k][0], TERMS.en[k][0]].map(x => x.toLowerCase());
+    if (names.some(n => s.includes(n))) { const [ti, sh, bo] = TERMS[lang][k]; botSay(fill(raw("bot_term"), { term: ti, short: sh, body: bo })); return; }
+  }
+  if (has("用語", "glossary", "word")) { botSay(raw("bot_gloss")); setTimeout(() => { closeChat(); go("scrGloss"); }, 900); return; }
+  if (has("お金", "残高", "増え", "減", "money", "balance")) botSay(fill(raw("bot_money"), { bal: solp(bal, 6) }));
+  else if (has("危", "安全", "怖", "safe", "risk")) botSay(raw("bot_safe"));
+  else if (has("次", "next", "phantom", "つなげ")) botSay(raw("bot_next"));
+  else if (has("勝", "負", "ずる", "win", "cheat")) botSay(raw("bot_win"));
+  else botSay(raw("bot_default"));
+}
+$("chips").onclick = e => { const b = e.target.closest("[data-chip]"); if (!b) return; const i = +b.dataset.chip; if (i === 4) { addMsg(esc(raw("chips")[4]), "u"); botSay(raw("bot_gloss")); setTimeout(() => { closeChat(); if (cur() === "scrGame") return; go("scrGloss"); }, 900); return; } askBot(raw("chips")[i]); };
+$("chatForm").onsubmit = e => { e.preventDefault(); const v = $("chatIn").value.trim(); if (!v) return; $("chatIn").value = ""; askBot(v); };
+
+applyLang();
+render("scrHome");
+})();
+</script>
+</body>
+</html>
